@@ -1,0 +1,100 @@
+*** Settings ***
+Resource          ../基础关键字.txt
+Resource          ../业务关键字.txt
+
+*** Keywords ***
+报告发送详细
+    Click Element    xpath=//a[contains(.,'查看详细')]
+    Comment    快递公司
+    Input Text    xpath=//input[contains(@name,'SendExpress')]    是打发士大夫
+    查询按钮
+    wait until element is visible    xpath=//*[@id="reportData"]/tbody/tr[1]/td[2]
+    ${快递公司}    Get Text    xpath=//*[@id="reportData"]/tbody/tr[1]/td[2]
+    Should Be Equal    ${快递公司}    是打发士大夫
+    Clear Element Text    xpath=//input[contains(@name,'SendExpress')]
+    Comment    快递单号
+    Input Text    xpath=//input[contains(@name,'ExpressNo')]    234234
+    查询按钮
+    sleep    1
+    wait until element is visible    xpath=//*[@id="reportData"]/tbody/tr/td[3]    10
+    ${快递单号}    Get Text    xpath=//*[@id="reportData"]/tbody/tr/td[3]
+    Should Contain    ${快递单号}    23423423dd3423
+    Clear Element Text    xpath=//input[contains(@name,'ExpressNo')]
+    Comment    接收地址
+    Input Text    xpath=//input[contains(@name,'SendAddress')]    是打发士大夫是的发送到
+    查询按钮
+    sleep    1
+    wait until element is visible    xpath=//*[@id="reportData"]/tbody/tr/td[4]
+    ${接收地址}    Get Text    xpath=//*[@id="reportData"]/tbody/tr/td[4]
+    Should Be Equal    ${接收地址}    是打发士大夫是的发送到
+    Clear Element Text    xpath=//input[contains(@name,'SendAddress')]
+
+发送报告编辑
+    Click Element    xpath=//a[contains(.,'发送报告')]
+    Wait Until Page Contains    接收人电话
+    Input Text    xpath=//input[contains(@name,'txtSendType')]    快递
+    Input Text    xpath=//input[contains(@name,'txtSendExpress')]    是打发士大夫
+    Input Text    xpath=//input[contains(@name,'txtExpressNo')]    23423423dd3423
+    Input Text    xpath=//input[contains(@name,'txtSendQuantity')]    3
+    Input Text    xpath=//input[contains(@name,'txtReceiver')]    手动阀
+    Input Text    xpath=//input[contains(@name,'txtReciverMobile')]    18911111111
+    Input Text    xpath=//input[contains(@name,'txtSendAddress')]    是打发士大夫是的发送到
+    Input Text    xpath=//input[contains(@name,'txtRemark')]    是的方式是是是是是是是是是是撒飒飒是
+    保存按钮
+    确定按钮
+
+发送报告
+    [Arguments]    ${流水号}
+    Comment    发送状态
+    Comment    Select From List By Value    id=IsSent    true
+    查询按钮
+    Comment    公共流水号
+    公共流水号    ${流水号}
+    查询按钮
+    sleep    3
+    wait until element is visible    //*[@id="projectData"]/tbody/tr/td[1]
+    ${报告发送流水号}    Get Text    xpath=//*[@id="projectData"]/tbody/tr/td[1]
+    ${报告发送报告号}    Get Text    xpath=//*[@id="projectData"]/tbody/tr/td[2]
+    ${报告发送项目地址}    Get Text    xpath=//*[@id="projectData"]/tbody/tr/td[3]
+    ${报告发送小区名称}    Get Text    xpath=//*[@id="projectData"]/tbody/tr/td[4]
+    ${报告发送发送份数}    Get Text    xpath=//*[@id="projectData"]/tbody/tr/td[5]
+    发送报告编辑
+    ${报告发送新发送份数}    Evaluate    ${报告发送发送份数}+3
+    sleep    1
+    ${报告发送发送份数}    Get Text    xpath=//*[@id="projectData"]/tbody/tr/td[5]
+    ${报告发送发送份数}    Evaluate    int(${报告发送发送份数})
+    Should Be Equal    ${报告发送发送份数}    ${报告发送新发送份数}
+
+报告发送查询
+    [Arguments]    ${流水号}    ${报告号}    ${项目地址}    ${小区名称}
+    Comment    发送状态
+    Select From List By Value    id=IsSent    false
+    查询按钮
+    Comment    公共流水号
+    公共流水号    ${流水号}
+    查询按钮
+    wait until element is visible    //*[@id="projectData"]/tbody/tr/td[1]
+    ${报告发送流水号}    Get Text    xpath=//*[@id="projectData"]/tbody/tr/td[1]
+    Should Be Equal    ${报告发送流水号}    ${流水号}
+    清空公共流水号
+    Comment    公共报告号
+    公共报告号    ${报告号}
+    查询按钮
+    wait until element is visible    //*[@id="projectData"]/tbody/tr/td[2]
+    ${报告发送报告号}    Get Text    xpath=//*[@id="projectData"]/tbody/tr/td[2]
+    Should Be Equal    ${报告发送报告号}    ${报告号}
+    清空公共报告号
+    Comment    公共项目地址
+    公共项目地址    ${项目地址}
+    查询按钮
+    wait until element is visible    //*[@id="projectData"]/tbody/tr/td[3]
+    ${报告发送地址}    Get Text    xpath=//*[@id="projectData"]/tbody/tr/td[3]
+    Should Be Equal    ${报告发送地址}    ${项目地址}
+    清空公共项目地址
+    Comment    公共小区名称
+    公共小区名称    ${小区名称}
+    查询按钮
+    wait until element is visible    //*[@id="projectData"]/tbody/tr/td[4]
+    ${报告发送小区名称}    Get Text    xpath=//*[@id="projectData"]/tbody/tr/td[4]
+    Should Be Equal    ${报告发送小区名称}    ${小区名称}
+    清空公共小区名称

@@ -1,0 +1,14 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          ../业务关键字.txt
+Resource          ../基础关键字.txt
+
+*** Test Cases ***
+企业用户注册
+    set selenium speed    0.5seconds
+    打开浏览器
+    Click Element    xpath=//*[@id='fm1']/div[1]/p/a
+    Click Element    xpath=//*[@id='qiye']
+    注册
+    ${var}    Get Text    xpath=//*[contains(.,'公司信息提交成功')]
+    Should Contain    ${var}    公司信息提交成功

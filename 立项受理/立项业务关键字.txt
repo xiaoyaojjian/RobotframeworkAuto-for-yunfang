@@ -1,0 +1,60 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          立项关键字.txt
+Resource          ../基础关键字.txt
+
+*** Keywords ***
+看房
+    Click Button    id=addcontacts
+    看房联系人    张三丰
+    看房联系人电话    13866665555
+    Click Button    xpath=//*[@id="Contacts"]/table/tbody/tr[4]/td/button
+
+外业勘察
+    Click Element    xpath=//*[@id="frm1"]/div[3]/div[1]/table[1]/tbody/tr/td[2]/input[1]
+    ${userName}    ${password}    登录model
+    Select From List By Value    id=Investigator    ${userName}
+    Select From List By Index    id=OutSurveyTableId    2
+
+立项
+    Execute Javascript    jquery=$('.matter-btn').find('button').eq(0).trigger('click')
+
+提取信息
+    Click Button    id=extraction
+
+立项转报告
+    Execute Javascript    jquery=$('.matter-btn').find('button').eq(1).trigger('click')
+
+获取小区地址
+    Execute Javascript    jquery=$('.ac_results').css('display','inline')
+    Execute Javascript    jquery=text=$('.ac_even').text()
+    ${text}    Execute Javascript    return text
+    [Teardown]    Set Global Variable    ${text}
+    [Return]    ${text}
+
+数组转化为字符串
+    [Arguments]    @{list}
+    ${outStr}    Evaluate    ''.join(@{list})
+    [Teardown]    Set Global Variable    ${outStr}
+    [Return]    ${outStr}
+
+点击开始日期
+    Click Element    id=ProjectCreatorTimeStart
+
+点击结束日期
+    Click Element    id=ProjectCreatorTimeEnd
+
+日期清空
+    Click Element    id=laydate_clear
+
+日期今天
+    Click Element    id=laydate_today
+
+日期确认
+    Click Element    id=laydate_ok
+
+获取当前日期
+    ${time}    Get Time
+    ${currentDate}    Evaluate    '${time}'[0:10]
+    [Teardown]    Set Global Variable    ${currentDate}
+    [Return]    ${currentDate}

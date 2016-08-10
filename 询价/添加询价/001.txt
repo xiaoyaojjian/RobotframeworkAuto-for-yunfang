@@ -1,0 +1,187 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          ../../业务关键字.txt
+Resource          ../../基础关键字.txt
+Resource          ../询价关键字.txt
+Resource          ../../立项受理/模糊查询关键字.txt
+
+*** Test Cases ***
+询价主流程
+    set selenium speed    0.5seconds
+    打开询价
+    Comment    点击添加询价
+    Click Element    xpath=//*[@id="sidebar"]/ul/li[1]/ul/li[1]/a
+    Maximize Browser Window
+    窗口
+    询价content
+    ${price}    Get Text    id=AreaPrice
+    Run Keyword And Continue On Failure    Should Be True    '${price}'!='0'    询价查询不到基础库数据
+    Input Text    id=FeedbackPrice    40000
+    Input Text    id=MortgagePrice    39000
+    Input Text    id=InquiryPrice    41000
+    comment    验证打印询价单
+    ${printStatus}    Run Keyword And Return Status    Page Should Contain Button    id=print
+    Comment    Run Keyword If    ${printStatus}==True    Click Button    id=print
+    保存按钮
+    sleep    1
+    确定按钮
+    comment    验证询价是否添加成功，通过创建时间
+    ${listTime}    Get Table Cell    xpath=//*[@id="table"]    2    8
+    ${subTime}    获取当前时间
+    Should Contain    ${listTime}    ${subTime}    PASS
+    comment    验证询价添加人是否正确
+    ${iqueryPerson}    Get Table Cell    xpath=//*[@id="table"]    2    9
+    ${userName}    ${password}    登录model
+    Should Be Equal    ${iqueryPerson}    ${userName}    询价添加人错误
+    comment    验证立项的默认状态为‘否’
+    ${defaultStatus}    Get Table Cell    xpath=//*[@id="table"]    2    10
+    Should Be Equal    ${defaultStatus}    否
+    [Teardown]    Close Browser
+
+校验添加查询
+    set selenium speed    0.3seconds
+    登录
+    打开询价
+    Comment    点击添加询价
+    点击添加询价
+    Maximize Browser Window
+    Select Frame    xpath=//*[@id='url']
+    Input Text    xpath=//*[@id='ResidentialAreaName']    天天    #小区名称
+    press key    xpath=//*[@id='ResidentialAreaName']    \\13
+    comment    验证小区地址能否自动填写
+    去除小区名称隐藏
+    ${platName}    Get Text    css=.ac_even    #使用css定位
+    Should Contain    ${platName}    小区地址
+    Input Text    xpath=//*[@id='BuildingArea']    100    #建筑面积
+    Execute Javascript    jquery=$('#search').trigger('click');    #不知道为何用selenium的click button不能点击
+    sleep    1
+    Input Text    id=MortgagePrice    39000    #抵押单价
+    Input Text    id=InquiryPrice    41000    #市场单价
+    comment    验证历史询价能够被点击
+    Wait Until Element Is Enabled    id=history-tab    2
+    Click Element    id=history-tab
+    comment    验证报盘案例
+    Wait Until Element Is Enabled    id=baopan-tab    2
+    Click Element    id=baopan-tab
+    ${baopan}    Run Keyword And Continue On Failure    Get Table Cell    xpath=//*[@id="OfferCase"]/table    2    1
+    Run Keyword And Continue On Failure    Should Not Be Empty    ${baopan}    报盘信息来源查询不到
+    comment    验证成交案例
+    Wait Until Element Is Enabled    id=done-tab    2
+    Click Element    id=done-tab
+    ${chengjiao}    Get Table Cell    xpath=//*[@id="DealCase"]/table    2    1
+    Should Not Be Empty    ${chengjiao}    成交信息查询不到
+    comment    验证成交案例
+    Wait Until Element Is Enabled    id=baogao-tab    2
+    Click Element    id=baogao-tab
+    ${baogao}    Run Keyword And Continue On Failure    Get Table Cell    xpath=//*[@id="ReportCase"]/table    2    1
+    Run Keyword And Continue On Failure    Should Not Be Empty    ${baogao}    报告信息查询不到
+    comment    验证能否转立项
+    Click Button    id=attendto
+    sleep    2
+    Run Keyword And Continue On Failure    Page Should Contain Button    //button[contains(text(),'提取信息')]    找不到提取信息按钮
+
+检验成交案例坐标查询正确性
+    set selenium speed    0.5seconds
+    登录
+    打开询价
+    Comment    点击添加询价
+    点击添加询价
+    Maximize Browser Window
+    窗口
+    Input Text    xpath=//*[@id='ResidentialAreaName']    天天
+    press key    xpath=//*[@id='ResidentialAreaName']    \\13
+    comment    验证成交案例
+    ${table}    Set Variable    DealCase
+    ${tbody}    Set Variable    DealCaseTable
+    Wait Until Element Is Enabled    id=done-tab    2
+    Click Element    id=done-tab
+    Click Element    xpath=//*[@id="DealCase"]/div/p[2]/a[3]
+    ${retNum1}    Get Text    xpath=//*[@id="DealCase"]/div/p[2]/a[3]
+    询价建筑面积循环判断    ${retNum1}    ${table}    ${tbody}
+    Click Element    xpath=//*[@id="DealCase"]/div/p[2]/a[4]
+    ${retNum2}    Get Text    xpath=//*[@id="DealCase"]/div/p[2]/a[4]
+    询价建筑面积循环判断    ${retNum2}    ${table}    ${tbody}
+    Click Element    xpath=//*[@id="DealCase"]/div/p[2]/a[5]
+    ${retNum3}    Get Text    xpath=//*[@id="DealCase"]/div/p[2]/a[5]
+    询价建筑面积循环判断    ${retNum3}    ${table}    ${tbody}
+    Click Element    xpath=//*[@id="DealCase"]/div/p[2]/a[6]
+    ${retNum4}    Get Text    xpath=//*[@id="DealCase"]/div/p[2]/a[6]
+    询价建筑面积循环判断    ${retNum4}    ${table}    ${tbody}
+    Click Element    xpath=//*[@id="DealCase"]/div/p[2]/a[7]
+    ${retNum5}    Get Text    xpath=//*[@id="DealCase"]/div/p[2]/a[7]
+    询价建筑面积循环判断    ${retNum5}    ${table}    ${tbody}
+    Click Element    xpath=//*[@id="DealCase"]/div/p[2]/a[8]
+    ${retNum6}    Get Text    xpath=//*[@id="DealCase"]/div/p[2]/a[8]
+    询价建筑面积循环判断    ${retNum6}    ${table}    ${tbody}
+    [Teardown]    Close Browser
+
+检验报告案例坐标查询的正确性
+    set selenium speed    0.2seconds
+    登录
+    打开询价
+    Comment    点击添加询价
+    点击添加询价
+    Maximize Browser Window
+    窗口
+    Input Text    xpath=//*[@id='ResidentialAreaName']    天天
+    press key    xpath=//*[@id='ResidentialAreaName']    \\13
+    comment    验证成交案例
+    ${table}    Set Variable    ReportCase
+    ${tbody}    Set Variable    ReportCaseTable
+    Wait Until Element Is Enabled    id=baogao-tab    2
+    Click Element    id=baogao-tab
+    Click Element    //*[@id="ReportCase"]/div/p[2]/a[3]
+    ${retNum1}    Get Text    //*[@id="ReportCase"]/div/p[2]/a[3]
+    询价建筑面积循环判断    ${retNum1}    ${table}    ${tbody}
+    Click Element    //*[@id="ReportCase"]/div/p[2]/a[4]
+    ${retNum2}    Get Text    //*[@id="ReportCase"]/div/p[2]/a[4]
+    询价建筑面积循环判断    ${retNum2}    ${table}    ${tbody}
+    Click Element    //*[@id="ReportCase"]/div/p[2]/a[5]
+    ${retNum3}    Get Text    //*[@id="ReportCase"]/div/p[2]/a[5]
+    询价建筑面积循环判断    ${retNum3}    ${table}    ${tbody}
+    Click Element    //*[@id="ReportCase"]/div/p[2]/a[6]
+    ${retNum4}    Get Text    //*[@id="ReportCase"]/div/p[2]/a[6]
+    询价建筑面积循环判断    ${retNum4}    ${table}    ${tbody}
+    Click Element    //*[@id="ReportCase"]/div/p[2]/a[7]
+    ${retNum5}    Get Text    //*[@id="ReportCase"]/div/p[2]/a[7]
+    询价建筑面积循环判断    ${retNum5}    ${table}    ${tbody}
+    Click Element    //*[@id="ReportCase"]/div/p[2]/a[8]
+    ${retNum6}    Get Text    //*[@id="ReportCase"]/div/p[2]/a[8]
+    询价建筑面积循环判断    ${retNum6}    ${table}    ${tbody}
+    [Teardown]    Close Browser
+
+检验报盘案例坐标查询正确性
+    set selenium speed    0.5seconds
+    登录
+    打开询价
+    Comment    点击添加询价
+    点击添加询价
+    Maximize Browser Window
+    窗口
+    Input Text    xpath=//*[@id='ResidentialAreaName']    天天
+    press key    xpath=//*[@id='ResidentialAreaName']    \\13
+    comment    验证小区地址能否自动填写
+    comment    验证报盘案例
+    ${table}    Set Variable    OfferCase
+    ${tbody}    Set Variable    OfferCaseTable
+    Wait Until Element Is Enabled    id=baopan-tab    2
+    Click Element    id=baopan-tab
+    Click Element    //a[contains(text(),'50~70')]
+    ${retNum1}    Get Text    //a[contains(text(),'50~70')]
+    询价建筑面积循环判断    ${retNum1}    ${table}    ${tbody}
+    Click Element    //a[contains(text(),'70~90')]
+    ${retNum2}    Get Text    //a[contains(text(),'70~90')]
+    询价建筑面积循环判断    ${retNum2}    ${table}    ${tbody}
+    Click Element    //a[contains(text(),'90~110')]
+    ${retNum3}    Get Text    //a[contains(text(),'90~110')]
+    询价建筑面积循环判断    ${retNum3}    ${table}    ${tbody}
+    Click Element    //a[contains(text(),'110~130')]
+    ${retNum4}    Get Text    //a[contains(text(),'110~130')]
+    询价建筑面积循环判断    ${retNum4}    ${table}    ${tbody}
+    Click Element    //a[contains(text(),'130~150')]
+    ${retNum5}    Get Text    //a[contains(text(),'130~150')]
+    询价建筑面积循环判断    ${retNum5}    ${table}    ${tbody}
+    Click Element    //a[contains(text(),'150~200')]
+    ${retNum6}    Get Text    //a[contains(text(),'150~200')]
+    询价建筑面积循环判断    ${retNum6}    ${table}    ${tbody}
+    [Teardown]    Close Browser

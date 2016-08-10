@@ -1,0 +1,33 @@
+*** Settings ***
+Force Tags
+Default Tags
+Resource          ../业务关键字.txt
+Library           Selenium2Library
+Resource          ../基础关键字.txt
+Resource          报告发送流程.txt
+
+*** Test Cases ***
+报告发送
+    set selenium speed    0.5seconds
+    登录
+    报告发送菜单按钮
+    窗口
+    Wait Until Page Contains    报告发送
+    报告发送查询    5391859191    2342344234234    北京市密云区O2O正式委托0512153039测试的物业地址正式委托0512153039    五栋大楼
+    Select From List By Value    id=IsSent    true
+    发送报告    4682934257
+    报告发送详细
+
+报告发送查询
+    set selenium speed    0.5seconds
+    登录
+    报告发送菜单按钮
+    窗口
+    Wait Until Page Contains    报告发送
+    ${table}    Set Variable    projectData
+    ${table1}    Set Variable    thead
+    ${table2}    Set Variable    tbody
+    按流水号查询    ${table}    ${table1}    ${table2}    5323203251    流水号
+    按报告号查询    ${table}    ${table1}    ${table2}    20160512183446    报告编号
+    按项目地址查询    ${table}    ${table1}    ${table2}    北京市西城区五栋大楼车公庄大街9号院    项目地址
+    按小区名称查询    ${table}    ${table1}    ${table2}    O2O正式委托0512182624    小区名称1

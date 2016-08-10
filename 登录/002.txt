@@ -1,0 +1,11 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          ../业务关键字.txt
+Resource          ../基础关键字.txt
+
+*** Test Cases ***
+login
+    登录
+    ${var}    Get Title
+    comment    判断登录后的title是否符合预期
+    Should Be Equal    ${var}    评E评/估价流程与管理系统

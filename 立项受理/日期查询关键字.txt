@@ -1,0 +1,29 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          ../基础关键字.txt
+Resource          ../业务关键字.txt
+Resource          立项关键字.txt
+Resource          立项业务关键字.txt
+Resource          模糊查询关键字.txt
+
+*** Keywords ***
+日期查询
+    [Arguments]    ${tablePath}    ${col}
+    点击开始日期
+    日期今天
+    点击结束日期
+    日期今天
+    查询按钮
+    ${expectDate}    获取当前日期
+    ${c}    Evaluate    '${expectDate}'.replace('-','')
+    ${d}    Evaluate    '${c}'[0:3]+'${c}'[4:]
+    Execute Javascript    jquery=rows=$('#table tbody').children('tr').length
+    ${rows}    Execute Javascript    return rows
+    Execute Javascript    jquery=firstValue=$('#table tbody').children('tr').eq(0).children('td').eq(${col}-1).text()    #最新的一条
+    ${firstValue}    Execute Javascript    return firstValue
+    ${a}    Evaluate    '${firstValue}'.replace('/','')
+    Execute Javascript    jquery=lastValue=$('#table tbody').children('tr').eq(${rows}-1).children('td').eq(${col}-1).text()    #最后一条
+    ${lastValue}    Execute Javascript    return lastValue
+    ${b}    Evaluate    '${lastValue}'.replace('/','')
+    Run Keyword And Continue On Failure    Should Contain    ${a}    ${d}
+    Run Keyword And Continue On Failure    Should Contain    ${b}    ${d}

@@ -1,0 +1,15 @@
+*** Settings ***
+Resource          ../业务关键字.txt
+Library           Selenium2Library
+Resource          ../基础关键字.txt
+Resource          报告发送流程.txt
+
+*** Keywords ***
+进行报告发送
+    [Arguments]    ${project_no}
+    报告发送菜单按钮
+    窗口
+    Wait Until Page Contains    报告发送
+    发送报告    ${project_no}
+    报告发送详细
+    Unselect Frame

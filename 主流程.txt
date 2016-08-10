@@ -1,0 +1,17 @@
+*** Settings ***
+Force Tags
+Default Tags
+Resource          业务关键字.txt
+Library           Selenium2Library
+Resource          基础关键字.txt
+
+*** Variables ***
+
+*** Test Cases ***
+debug
+    [Tags]
+    ${a}    Evaluate    []
+    ${b}    Evaluate    len(${a})
+    [Teardown]    Close Browser
+
+*** Keywords ***

@@ -1,0 +1,186 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          ../基础关键字.txt
+Resource          ../业务关键字.txt
+Resource          综合查询关键字.txt
+
+*** Test Cases ***
+导出和配置
+    [Setup]    登录
+    Set Selenium Speed    0.5
+    sleep    3
+    Click Element    xpath=//*[@id="sidebar"]/ul/li[7]/a
+    Set Selenium Speed    0.5
+    窗口
+    Click Element    xpath=//*[@id="btn_export"]    #批量导出
+    sleep    5
+    Click Element    xpath=//*[@id="ConfigListFunction"]
+    Click Element    xpath=//*[@id="add"]
+    Select Frame    id=layui-layer-iframe1
+    Input Text    xpath=//*[@id="SolutionName"]    呵呵09
+    Select From List By Value    xpath=//*[@id="IsDefault"]    False
+    Input Text    xpath=//*[@id="Remark"]    方案19
+    Click Element    xpath=//*[@id="submit"]
+    Unselect Frame
+    窗口
+    sleep    3
+    确定按钮
+
+查询
+    [Setup]    登录
+    [Template]
+    Set Selenium Speed    0.5
+    sleep    3
+    Click Element    xpath=//*[@id="sidebar"]/ul/li[7]/a
+    Maximize Browser Window
+    窗口
+    综合流水号    4859
+    查询按钮
+    清空公共流水号
+    综合报告号    201605
+    查询按钮
+    Clear Element Text    xpath=//*[@id="ReportNo"]
+    综合项目地址    车公庄
+    查询按钮
+    clear element text    xpath=//*[@id="Address"]
+    小区名称1    五栋大楼
+    查询按钮
+    清空公共小区名称
+    Click Element    xpath=//*[@id="pointer"]
+    综合物业类型
+    查询按钮
+    Click Element    xpath=//*[@id="PropertyType"]/option[1]
+    综合报告类型    正式报告
+    查询按钮
+    Click Element    xpath=//*[@id="ReportType"]/option[1]
+    所属机构    中国
+    查询按钮
+    Clear Element Text    xpath=//*[@id="Bank"]
+    分支机构    手动
+    查询按钮
+    Clear Element Text    xpath=//*[@id="Subbranch"]
+    项目所属部门    1
+    查询按钮
+    Click Element    xpath=//*[@id="Department"]/option[1]
+    立项开始和结束时间
+    立项备注
+    查询按钮
+    Clear Element Text    xpath=//*[@id="Remark"]
+    客户姓名
+    查询按钮
+    Clear Element Text    xpath=//*[@id="CustomerName"]
+    客户手机
+    查询按钮
+    Clear Element Text    xpath=//*[@id="CustomerTel"]
+    客户电话
+    查询按钮
+    Clear Element Text    xpath=//*[@id="CustomerPhone"]
+    项目状态
+    Click Element    xpath=//*[@id="State"]/option[1]
+    看房联系人
+    查询按钮
+    Clear Element Text    xpath=//*[@id="ContactsName"]
+    看房联系人电话
+    查询按钮
+    Clear Element Text    xpath=//*[@id="ContactsPhone"]
+    查询方案
+    查询按钮
+    Click Element    xpath=//*[@id="Solution"]/option[1]
+
+查看和下载报告
+    [Setup]    登录
+    sleep    5
+    Click Element    xpath=//*[@id="sidebar"]/ul/li[7]
+    Set Selenium Speed    0.5
+    窗口
+    Wait Until Element Is Enabled    xpath=//*[@id="table"]/tbody/tr[1]/td[6]/a[1]
+    Click Element    xpath=//*[@id="table"]/tbody/tr[1]/td[6]/a[1]
+    Wait Until Element Is Enabled    xpath=/html/body/ul/li[2]/a
+    Click Element    xpath=/html/body/ul/li[2]/a
+    Wait Until Element Is Visible    xpath=//*[@id="table"]/tbody/tr[1]/td[6]/a[2]
+    Click Element    xpath=//*[@id="table"]/tbody/tr[1]/td[6]/a[2]
+    Select Frame    id=layui-layer-iframe1
+    Comment    Select \ Checkbox    id=DownLoadInfo
+    Execute Javascript    jquery=$('input[type=checkbox][value=ReportInfo]').trigger('click')
+    Execute Javascript    jquery=$('input[type=checkbox][value=OutTaskInfo]').trigger('click')
+    Execute Javascript    jquery=$('input[type=checkbox][value=LianJiaInfo]').trigger('click')
+    Click Button    xpath=//*[@id="BtnSubmit"]
+    Unselect Frame
+    窗口
+    sleep    3
+    Wait Until Element Is Enabled    css=.layui-layer-setwin
+    Click Element    css=.layui-layer-setwin
+
+下载报告
+    登录
+    sleep    5
+    Click Element At Coordinates    id=layui-layer-shade1    100    100
+    Click Element    xpath=//*[@id="sidebar"]/ul/li[7]
+    窗口
+    Wait Until Element Is Visible    xpath=//*[@id="table"]/tbody/tr[1]/td[6]/a[2]
+    Click Element    xpath=//*[@id="table"]/tbody/tr[1]/td[6]/a[2]
+    Select Frame    id=layui-layer-iframe1
+    Comment    Select \ Checkbox    id=DownLoadInfo
+    Execute Javascript    jquery=$('input[type=checkbox][value=ReportInfo]').trigger('click')
+    Execute Javascript    jquery=$('input[type=checkbox][value=OutTaskInfo]').trigger('click')
+    Execute Javascript    jquery=$('input[type=checkbox][value=LianJiaInfo]').trigger('click')
+    Click Button    xpath=//*[@id="BtnSubmit"]
+    Unselect Frame
+    窗口
+    Wait Until Element Is Enabled    css=.layui-layer-setwin
+    Click Element    css=.layui-layer-setwin
+
+验证
+    登录
+    sleep    5
+    Click Element At Coordinates    id=layui-layer-shade1    100    100
+    Click Element    xpath=//*[@id="sidebar"]/ul/li[7]/a
+    Set Selenium Speed    3
+    窗口
+    Click Element    xpath=//*[@id="ConfigListFunction"]
+    Click Element    xpath=//*[@id="add"]
+    Select Frame    id=layui-layer-iframe1
+    Input Text    xpath=//*[@id="SolutionName"]    呵呵
+    Select From List By Value    xpath=//*[@id="IsDefault"]    False
+    ${remark}    Input Text    xpath=//*[@id="Remark"]    方案
+    ${remark}    get text    xpath=//*[@id="Remark"]
+    Comment    Input Text    xpath=//*[@id="Remark"]    方案
+    ${rk}    Set Variable    ${remark}
+    Run Keyword If    ${rk}!=${remark}    Execute Javascript    continue for loop
+    else if    Execute Javascript    jquery=alert('方案已存在，请重新输入员')
+    Click Element    xpath=//*[@id="submit"]
+    Click Element    xpath=//*[@id="layui-layer2"]/div[3]/a
+
+方案配置（默认和删除）
+    [Setup]    登录
+    sleep    3
+    Click Element    xpath=//*[@id="sidebar"]/ul/li[7]/a
+    Set Selenium Speed    0.5
+    窗口
+    Click Element    xpath=//*[@id="ConfigListFunction"]
+    Click Element    xpath=//*[@id="table"]/tbody/tr[1]/td[4]/a[2]
+    Click Element    xpath=//*[@id="layui-layer1"]/div[3]/a[1]
+    Click Element    xpath=//*[@id="table"]/tbody/tr[1]/td[4]/a[3]
+    Click Element    xpath=//*[@id="layui-layer1"]/div[3]/a[1]
+    [Teardown]
+
+方案编辑
+    [Setup]    登录
+    sleep    3
+    Click Element    xpath=//*[@id="sidebar"]/ul/li[7]/a
+    Set Selenium Speed    0.5
+    窗口
+    Click Element    xpath=//*[@id="ConfigListFunction"]
+    Click Element    xpath=//*[@id="table"]/tbody/tr[1]/td[4]/a[1]
+    select frame    id=layui-layer-iframe1
+    Clear Element Text    id=SolutionName
+    input text    id=SolutionName    范德萨
+    Clear Element Text    id=Remark
+    input text    id=Remark    范德萨
+    Comment    sleep    3
+    click button    id=submit
+    Comment    sleep    3
+    Unselect Frame
+    窗口
+    sleep    3
+    确定按钮

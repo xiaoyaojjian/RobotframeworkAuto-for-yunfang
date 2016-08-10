@@ -1,0 +1,11 @@
+*** Settings ***
+Library           ReportRequests.py
+
+*** Variables ***
+${report_url}     http://reporttest.yunfangdata.com
+
+*** Keywords ***
+完成线上报告
+    [Arguments]    ${project_no}    ${report_no}    # 流水号|报告编号
+    Create Session    ${userName}    ${report_url}
+    Write Report    ${project_no}    ${report_no}

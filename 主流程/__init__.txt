@@ -1,0 +1,4 @@
+*** Settings ***
+Suite Setup
+Suite Teardown
+Resource          ../业务关键字.txt

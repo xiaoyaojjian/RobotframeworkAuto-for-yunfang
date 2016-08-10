@@ -1,0 +1,75 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Keywords ***
+客户手机
+    [Arguments]    ${CustomerTel}
+    Input Text    id=CustomerTel    ${CustomerTel}
+
+固定电话
+    [Arguments]    ${CustomerPhone}
+    Input Text    id=CustomerPhone    ${CustomerPhone}
+
+客户姓名
+    [Arguments]    ${CustomerName}
+    Input Text    id=CustomerName    ${CustomerName}
+    [Teardown]    Set Global Variable    ${CustomerName}
+    [Return]    ${CustomerName}
+
+所属机构
+    [Arguments]    ${CustomerBank}
+    Input Text    id=CustomerBank    ${CustomerBank}
+
+分支机构
+    [Arguments]    ${CustomerSubbranch}
+    Input Text    id=CustomerSubbranch    ${CustomerSubbranch}
+
+客户qq
+    [Arguments]    ${CustomerQQ}
+    Input Text    id=CustomerQQ    ${CustomerQQ}
+
+报告编号
+    [Arguments]    ${ReportNo}
+    Input Text    id=ReportNo    ${ReportNo}
+    [Teardown]    Set Global Variable    ${ReportNo}
+    [Return]    ${ReportNo}
+
+贷款机构
+    [Arguments]    ${CreditBank}
+    Input Text    id=CreditBank    ${CreditBank }
+
+贷款支行
+    [Arguments]    ${CreditSubbranch}
+    Input Text    id=CreditSubbranch    ${CreditSubbranch }
+
+贷款信息
+    [Arguments]    ${CreditInfo}
+    Input Text    id=CreditInfo    ${CreditInfo}
+
+估价委托方
+    [Arguments]    ${Principal}
+    Input Text    id=Principal    ${Principal}
+
+询值单价
+    [Arguments]    ${InquiryPrice}
+    Input Text    id=InquiryPrice    ${InquiryPrice}
+
+询值总价
+    [Arguments]    ${InquiryResult}
+    Input Text    id=InquiryResult    ${InquiryResult}
+
+建成年代
+    [Arguments]    ${BuildedYear}
+    Input Text    id=BuildedYear    ${BuildedYear}
+
+建筑面积
+    [Arguments]    ${BuildingArea}
+    Input Text    id=BuildingArea    ${BuildingArea}
+
+看房联系人
+    [Arguments]    ${contactsnames}
+    Input Text    id=contactsnames    ${contactsnames}
+
+看房联系人电话
+    [Arguments]    ${contactsTel}
+    Input Text    id=contactsTel    ${contactsTel}

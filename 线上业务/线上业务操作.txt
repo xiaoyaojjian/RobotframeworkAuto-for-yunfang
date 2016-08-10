@@ -1,0 +1,46 @@
+*** Settings ***
+Test Setup        进入线上业务模块
+Test Teardown     Unselect Frame
+Resource          线上业务对外资源.txt
+Library           RobotExt.py
+Library           TestDataLib.py
+
+*** Test Cases ***
+查看
+    查看线上业务内容    201605161624397323
+    Comment    获取表格所有信息    xpath=html/body/div[1]/table
+    Table Should Contain    xpath=.//table    201605161624397323
+
+询价
+    查看线上业务内容    201605190930189987
+    获取表格所有信息    html/body/div[1]/table
+    Unselect Frame
+    进入线上业务模块
+    人工询价    201605190930189987
+    询价检查点
+
+反馈
+    Run Keyword And Continue On Failure    反馈    201605111713219164
+    Run Keyword And Continue On Failure    反馈    201605111713219164
+    查看线上业务内容    201605111713219164
+    Run Keyword And Continue On Failure    反馈内容检查点
+
+不受理
+    业务不受理    201605161734062066
+
+受理
+    查看线上业务内容    201605111713219164
+    获取表格所有信息    html/body/div[1]/table
+    Unselect Frame
+    进入线上业务模块
+    业务受理    201605111713219164
+    业务受理检查点
+
+123
+    Comment    @{dataName}    Create List    流水号    交易编号    物业地址    没有数据
+    Comment    @{dataSet}    Get Test Data    线上业务    ${dataName}
+    Comment    ${len}    Get Length    ${dataSet}
+    Comment    log    len(${dataSet})
+    Comment    : FOR    ${row}    IN RANGE    ${len}
+    Comment    \    log    ${dataSet[${row}][3]}
+    Run Keyword By Testdata    线上业务    自定义查询    流水号    交易编号    物业地址    小区名称

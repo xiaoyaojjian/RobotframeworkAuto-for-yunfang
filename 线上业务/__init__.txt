@@ -1,0 +1,5 @@
+*** Settings ***
+Suite Setup       登录
+Suite Teardown    Close Browser
+Test Setup
+Resource          ../业务关键字.txt

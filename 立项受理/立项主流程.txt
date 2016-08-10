@@ -1,0 +1,97 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          ../基础关键字.txt
+Resource          ../业务关键字.txt
+Resource          立项关键字.txt
+Resource          立项业务关键字.txt
+Resource          模糊查询关键字.txt
+
+*** Keywords ***
+立项主流程
+    Set Selenium Speed    0.3
+    点击立项受理
+    点击立项
+    窗口
+    ${serialNum}     ${projectNo}    新增立项数据
+    Unselect Frame
+    [Teardown]
+    [Return]    ${serialNum}    ${projectNo}
+
+提交审核
+    [Arguments]    ${project_no}
+    [Documentation]    根据流水号提交审核
+    Set Selenium Speed    0.3
+    点击立项列表
+    窗口
+    comment    流水号查询
+    Input Text    xpath=.//*[@id='ProjectNo']    ${project_no}
+    Click Button    xpath=.//*[@id='frm1']/table/tbody/tr[1]/td[9]/button
+    Clear Element Text    xpath=.//*[@id='ProjectNo']
+    Click Link    xpath=.//*[@id='table']/tbody/tr[1]/td[last()]/a[text()='提交审核']    #点击提交审核按钮
+    Click Element    xpath=//a[contains(.,'是')]    #确定提交
+    Comment    ${Success}    Get Text    xpath=.//*[contains(@id,'layui-layer')]/div
+    Comment    Should Not Be Equal    ${Success}    此项目无报告，无法提交!
+    Unselect Frame
+
+新增立项数据
+    客户手机    13166666666
+    固定电话    020-6716910
+    ${expectCustomerName}    客户姓名    敖翔
+    所属机构    越南总行
+    分支机构    越南分行
+    客户qq    888888
+    ${num}    随机数
+    ${expectReportNo}    报告编号    10086${num}
+    Select From List By Value    id=City    广州市
+    小区名称1    六福
+    Press Key    id=ResidentialAreaName    \\13
+    ${expectPlatName}    获取小区地址
+    建筑面积    100
+    询值单价    50000
+    建成年代    2000
+    贷款机构    中国银行
+    贷款支行    中国分行
+    贷款信息    贷款10000亿
+    估价委托方    迪拜旺仔估价机构
+    外业勘察
+    看房
+    立项
+    ${expectCreatetime}    获取当前时间
+    ${verifyTime}    Evaluate    '${expectCreatetime}'.replace('-','/')
+    ${Time}    Evaluate    '${verifyTime}'[0:5]+'${verifyTime}'[6:]
+    Wait Until Page Contains    受理时间
+    comment    验证流水号是否为空
+    ${serialNum}    getCell    xpath=//*[@id="table"]    1
+    Run Keyword And Continue On Failure    Should Not Be Empty    ${serialNum}
+    comment    验证报告编号是否正确
+    ${projectNo}    getCell    xpath=//*[@id="table"]    2
+    Run Keyword And Continue On Failure    Should Be Equal    ${projectNo}    ${expectReportNo}
+    comment    验证项目地址
+    ${projectAddress}    getCell    xpath=//*[@id="table"]    3
+    Run Keyword And Continue On Failure    Should Contain    ${projectAddress}    广州市
+    comment    验证小区名称
+    ${platName}    getCell    xpath=//*[@id="table"]    4
+    Run Keyword And Continue On Failure    Should Contain    ${expectPlatName}    ${platName}
+    comment    验证物业类型是否有值
+    ${wuyeType}    getCell    xpath=//*[@id="table"]    5
+    Run Keyword And Continue On Failure    Should Be Equal    ${wuyeType}    成套住宅
+    comment    验证估价目的有值
+    ${estimateTarget}    getCell    xpath=//*[@id="table"]    6
+    Run Keyword And Continue On Failure    Should Be Equal    ${estimateTarget}    房地产抵押（非按揭）
+    comment    验证报告类型
+    ${reportType}    getCell    xpath=//*[@id="table"]    7
+    Run Keyword And Continue On Failure    Should Be Equal    ${reportType}    正式报告
+    comment    验证项目来源
+    ${projectSource}    getCell    xpath=//*[@id="table"]    8
+    Run Keyword And Continue On Failure    Should Be Equal    ${projectSource}    微信
+    comment    验证客户姓名
+    ${customerName}    getCell    xpath=//*[@id="table"]    9
+    Run Keyword And Continue On Failure    Should Be Equal    ${customerName}    ${expectCustomerName}
+    comment    验证创建时间
+    ${creatTime}    getCell    xpath=//*[@id="table"]    10
+    Run Keyword And Continue On Failure    Should Be True    '${Time}'=='${creatTime}'
+    comment    验证默认提交审核是否为否
+    ${isCommitCheck}    getCell    xpath=//*[@id="table"]    11
+    Should Be Equal    ${isCommitCheck}    否
+    comment    点击线上报告
+    [Return]    ${serialNum}    ${projectNo}

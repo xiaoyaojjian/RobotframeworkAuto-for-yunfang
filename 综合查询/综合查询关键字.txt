@@ -1,0 +1,81 @@
+*** Settings ***
+Resource          ../基础关键字.txt
+Resource          ../业务关键字.txt
+
+*** Keywords ***
+综合流水号
+    [Arguments]    ${流水号}
+    Input Text    xpath=//input[contains(@name,'ProjectNo')]    ${流水号}
+
+综合报告号
+    [Arguments]    ${综合报告号}
+    Input Text    id=ReportNo    ${综合报告号}
+
+综合项目地址
+    [Arguments]    ${综合项目地址}
+    Input Text    id=Address    ${综合项目地址}
+
+小区名称
+    [Arguments]    ${小区名称}
+    input text    id=ResidentialAreaName    ${小区名称}
+
+综合物业类型
+    Select From List By Value    id=PropertyType    成套住宅
+
+综合报告类型
+    [Arguments]    ${报告类型}
+    Select From List By Value    id=ReportType    正式报告
+
+所属机构
+    [Arguments]    ${所属机构}
+    input text    id=Bank    ${所属机构}
+
+分支机构
+    [Arguments]    ${分支机构}
+    input text    id=Subbranch    ${分支机构}
+
+项目所属部门
+    [Arguments]    ${项目所属部门机构}
+    Select From List By Value    id=Department    1    ${项目所属部门机构}
+
+立项开始和结束时间
+    Click Element    id=CreateTimeBegin
+    Click Element    id=laydate_ok
+    Click Element    id=CreateTimeEnd
+    Click Element    id=laydate_ok
+    查询按钮
+    Click Element    id=CreateTimeBegin
+    Click Element    id=laydate_clear
+    Click Element    id=CreateTimeEnd
+    Click Element    id=laydate_clear
+
+立项备注
+    Input Text    id=Remark    发大厦
+
+客户姓名
+    input text    id=CustomerName    敖翔
+
+客户手机
+    Input Text    id=CustomerTel    1316666
+
+客户电话
+    input text    id=CustomerPhone    67169
+
+项目状态
+    Select From List By Value    id=State    正常
+    查询按钮
+    Click Element    xpath=//*[@id="State"]/option[1]
+
+看房联系人
+    input text    id=ContactsName    张三
+
+看房联系人电话
+    input text    id=ContactsPhone    13866
+
+查询方案
+    Select From List By Value    id=Solution    25
+    查询按钮
+    Select From List By Value    id=Solution    0
+
+物业类型1
+    Select From List By Value    id=PropertyType    成套住宅

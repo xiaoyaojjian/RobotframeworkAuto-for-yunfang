@@ -1,0 +1,64 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          ../基础关键字.txt
+Resource          ../业务关键字.txt
+
+*** Keywords ***
+getCell
+    [Arguments]    ${tablePath}    ${col}
+    sleep    0.3
+    ${out}    Run Keyword And Continue On Failure    Get Table Cell    ${tablePath}    2    ${col}
+    [Teardown]    Set Global Variable    ${out}
+    [Return]    ${out}
+
+条件查询
+    [Arguments]    ${tablePath}    ${col}    ${id}
+    Set Selenium Speed    0.3
+    ${cellValue}    getCell    ${tablePath}    ${col}
+    ${subCellValue}    截取字符串    ${cellValue}
+    Execute Javascript    jquery=name=$('#${id}').get(0).tagName
+    ${type}    Execute Javascript    return name
+    根据类型查询    ${type}    ${id}    ${subCellValue}
+    查询按钮
+    ${expectCellValue}    getCell    ${tablePath}    ${col}
+    ${status}    Run Keyword And Return Status    Run Keyword And Continue On Failure    Should Contain    ${expectCellValue}    ${subCellValue}
+    结果提示框    ${status}
+    sleep    0.5
+    Get Alert Message
+    清空    ${type}    ${id}
+    查询按钮
+
+清空
+    [Arguments]    ${type}    ${id}
+    Run Keyword if    '${type}'=='INPUT'    Clear Element Text    id=${id}
+    ...    ELSE IF    '${type}'=='SELECT'    Select From List By Index    id=${id}    0
+
+选择查询
+    [Arguments]    ${id}
+    Set Selenium Speed    0.3
+    Select From List By Index    id=${id}    1
+
+文本查询
+    [Arguments]    ${id}    ${subCellValue}
+    Set Selenium Speed    0.3
+    Input Text    id=${id}    ${subCellValue}
+
+根据类型查询
+    [Arguments]    ${type}    ${id}    ${subCellValue}
+    Set Selenium Speed    0.3
+    Run Keyword If    '${type}'=='INPUT'    文本查询    ${id}    ${subCellValue}
+    ...    ELSE IF    '${type}'=='SELECT'    选择查询    ${id}
+
+截取字符串
+    [Arguments]    ${inStr}
+    ${temp}    Evaluate    '${inStr}'.decode('utf-8','ignore')    #解码为unicode，取前两个个字符
+    ${length}    Get Length    ${temp}
+    ${outStr}    Run Keyword And Return If    ${length}==1    Evaluate    '${inStr}'.decode('utf-8','ignore')[0:]
+    ${outStr}    Run Keyword And Return If    ${length}!=1    Evaluate    '${inStr}'.decode('utf-8','ignore')[0:${length}-1]
+    [Teardown]    Set Global Variable    ${outStr}
+    [Return]    ${outStr}
+
+结果提示框
+    [Arguments]    ${status}
+    Run Keyword If    '${status}'=='True'    Execute Javascript    jquery=alert('查询正确')
+    ...    ELSE IF    '${status}'=='False'    Execute Javascript    jquery=alert('查询错误')

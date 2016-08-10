@@ -1,0 +1,75 @@
+*** Settings ***
+Resource          线上业务公共操作.txt
+
+*** Keywords ***
+查看线上业务内容
+    [Arguments]    ${TransationNo}
+    Set Selenium Speed    0.5 s
+    根据业务编号查询    ${TransationNo}
+    Click Link    xpath=.//*[@id='table']/tbody/tr[1]/td[last()]/a[text()='查看']
+
+获取表格所有信息
+    [Arguments]    ${xpath}
+    &{table}    Get Table Values    xpath=${xpath}
+    Set Global Variable    &{table}
+
+进入线上业务模块
+    Click Link    xpath=.//*[@id='sidebar']/ul/li[@tag='/OnlineBusiness']/a
+    Set Selenium Timeout    3 seconds
+    Select Frame    xpath=//*[@id='url']
+
+进行人工询价
+    [Arguments]    ${TransationNo}
+    Set Selenium Speed    0.5 s
+    根据业务编号查询    ${TransationNo}
+    Click Link    xpath=.//*[@id='table']/tbody/tr[1]/td[last()]/a[text()='询价']
+
+业务不受理
+    [Arguments]    ${TransationNo}
+    Set Selenium Speed    0.5 s
+    根据业务编号查询    ${TransationNo}
+    Click Link    xpath=.//*[@id='table']/tbody/tr[1]/td[last()]/a[text()='不受理']
+    获取当前时间
+    Input Text    xpath=.//*[@id='RefuseReason']    不受理原因内容${expectTime}
+    Click Button    xpath=.//*[@id='btnRefuseSummit']
+    ${isSuee}    Get Text    xpath=.//*[contains(@id,'layui-layer')]/div[2]
+    Should Be Equal    ${isSuee}    操作成功!
+    Click Link    xpath=.//*[contains(@id,'layui-layer')]/div[3]/a
+
+业务受理
+    [Arguments]    ${TransationNo}
+    Set Selenium Speed    0.5 s
+    根据业务编号查询    ${TransationNo}
+    Click Link    xpath=.//*[@id='table']/tbody/tr[1]/td[last()]/a[text()='受理']
+
+询价检查点
+    Run Keyword And Continue On Failure    下拉框值对比    xpath=.//*[@id='City']    城市
+    Run Keyword And Continue On Failure    下拉框值对比    xpath=.//*[@id='District']    行政区域
+    Run Keyword And Continue On Failure    文本框值对比    xpath=.//*[@id='ResidentialAreaName']    小区名
+    Run Keyword And Continue On Failure    文本框值对比    xpath=.//*[@id='BuildingName']    楼栋名称
+    Run Keyword And Continue On Failure    文本框值对比    xpath=.//*[@id='BuildingArea']    面积
+    Run Keyword And Continue On Failure    文本框值对比    xpath=.//*[@id='Floor']    所在楼层
+    Run Keyword And Continue On Failure    文本框值对比    xpath=.//*[@id='MaxFloor']    总楼层
+    Run Keyword And Continue On Failure    文本框值对比    xpath=.//*[@id='BuildedYear']    建成年代
+    Run Keyword And Continue On Failure    下拉框值对比    xpath=.//*[@id='Toword']    朝向
+    Run Keyword And Continue On Failure    下拉框值对比    xpath=.//*[@id='Decoration']    装修情况
+    Run Keyword And Continue On Failure    文本框值对比    xpath=.//*[@id='Remark']    备注
+
+反馈内容检查点
+    : FOR    ${反馈内容}    IN    @{反馈内容List}
+    \    Table Should Contain    xpath=html/body/div[2]/table    ${反馈内容}
+
+业务受理检查点
+    Comment    \    下拉框值对比    xpath=.//*[@id='BusinessType']    估价目的
+    Comment    \    下拉框值对比    xpath=.//*[@id='PropertyType']    物业类型
+    下拉框值对比    xpath=.//*[@id='City']    城市
+    下拉框值对比    xpath=.//*[@id='District']    行政区域
+    文本框值对比    xpath=.//*[@id='ResidentialAreaName']    小区名
+    文本框值对比    xpath=.//*[@id='ResidentialAddress']    物业地址
+    文本框值对比    xpath=.//*[@id='BuildingArea']    面积
+    文本框值对比    xpath=.//*[@id='BuildedYear']    建成年代
+    文本框值对比    xpath=.//*[@id='Principal']    所属公司
+    ${看房联系人}    Get Dict Value    看房联系人    &{table}
+    @{看房联系人List}    String To List    ${看房联系人}
+    : FOR    ${temp}    IN    @{看房联系人List}
+    \    Table Should Contain    xpath=.//*[@id='ExplorationContactsTb']    ${temp}

@@ -1,0 +1,66 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          ../../业务关键字.txt
+Resource          ../../基础关键字.txt
+
+*** Test Cases ***
+校验询价列表
+    set selenium speed    0.3seconds
+    登录
+    打开询价
+    点击询价列表
+    窗口
+    sleep    2
+    列表记录数
+    ${num}    Get Alert Message
+    Should Be Equal    ${num}    10
+    comment    验证每页显示多少条记录是否正确
+    Click Element    css=.btn-group.dropup    #如果有空格需要连缀选择
+    Comment    Execute Javascript    jquery=$('.dropdown-menu li:eq(0)').removeClass()    #清空默认的class属性
+    Comment    sleep    1
+    Comment    Execute Javascript    jquery=$('.dropdown-menu li:eq(2)').attr('class','active')    #设置为50
+    Click Element    xpath=/html/body/div/div[1]/div[2]/div[4]/div[1]/span[2]/span/ul/li[4]
+    列表记录数
+    ${numCount}    Get Alert Message
+    Should Be True    '${numCount}'>'10'    记录数必须大于10
+    sleep    2
+    Page Should Contain Element    //a[contains(.,'查看')]    #是否存在该元素
+    comment    验证翻页控件
+    comment    验证小区名称查询
+    ${completePlatName}    Get Table Cell    xpath=//*[@id="table"]    2    1
+    Comment    ${platName}    字符串截取    ${completePlatName}    #模糊查询
+    小区名称    ${completePlatName}
+    Click Element    xpath=//*[@id="searchinfo"]/table/tbody/tr/td[9]/button
+    ${verifyPlatName}    Get Table Cell    xpath=//*[@id="table"]    2    1
+    Comment    Should Match Regexp    ${verifyPlatName}    .*?${platName}.*?    #这里其实用should contains更好
+    Should Contain    ${verifyPlatName}    ${completePlatName}
+    清空小区名称
+    Click Element    xpath=//*[@id="searchinfo"]/table/tbody/tr/td[9]/button
+    comment    验证项目地址
+    ${address}    Get Table Cell    xpath=//*[@id="table"]    2    2
+    询价项目地址    ${address}
+    Click Element    xpath=//*[@id="searchinfo"]/table/tbody/tr/td[9]/button
+    ${verifyAddress}    Get Table Cell    xpath=//*[@id="table"]    2    2
+    Should Contain    ${verifyAddress}    ${address}
+    清空询价项目地址
+    Click Element    xpath=//*[@id="searchinfo"]/table/tbody/tr/td[9]/button
+    comment    验证询价机构
+    ${bank}    Get Table Cell    xpath=//*[@id="table"]    2    6
+    Input Text    id=Bank    ${bank}
+    Click Element    xpath=//*[@id="searchinfo"]/table/tbody/tr/td[9]/button
+    ${verifyBank}    Get Table Cell    xpath=//*[@id="table"]    2    2
+    Should Contain    ${verifyBank}    ${bank}
+    Clear Element Text    id=Bank
+    Click Element    xpath=//*[@id="searchinfo"]/table/tbody/tr/td[9]/button
+    comment    验证客户名称
+    ${customName}    Get Table Cell    xpath=//*[@id="table"]    2    7
+    Input Text    id=Bank    ${customName}
+    Click Element    xpath=//*[@id="searchinfo"]/table/tbody/tr/td[9]/button
+    ${verifyCustomName}    Get Table Cell    xpath=//*[@id="table"]    2    7
+    Should Contain    ${verifyCustomName}    ${customName}
+    Clear Element Text    id=CustomerName
+    Click Element    xpath=//*[@id="searchinfo"]/table/tbody/tr/td[9]/button
+    comment    通过点击修改按钮在界面查看添加信息是否真的保存了
+    Click Element    xpath=//*[contains(text(),'修改')]
+    ${status}    Run Keyword And Return Status    去除小区名称隐藏
+    Run Keyword If    '${status}'=='True'    log    存在小区信息

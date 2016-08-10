@@ -1,0 +1,26 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Keywords ***
+询价项目地址
+    [Arguments]    ${address}
+    Input Text    id=Address    ${address}
+
+列表记录数
+    Execute Javascript    jquery=alert($('#table tbody').children('tr').length)    #得到翻页后页面中的记录是否为10条，默认的
+
+清空询价项目地址
+    Clear Element Text    id=Address
+
+去除小区名称隐藏
+    Execute Javascript    jquery=$('.ac_results').css('display','inline');
+
+清除文本
+    [Arguments]    ${id}
+    Execute Javascript    jquery=disable=typeof($('#${id}').attr('disabled'))
+    ${disable}    Execute Javascript    return disable
+    Run Keyword If    '${disable}'!='undefined'    Execute Javascript    jquery=$('#${id}').css('disabled',true)
+    ...    ELSE    Clear Element Text    id=${id}
+
+转立项按钮
+    Click Element    xpath=//button[contains(.,'转立项')]

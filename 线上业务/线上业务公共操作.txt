@@ -1,0 +1,81 @@
+*** Settings ***
+Resource          ../业务关键字.txt
+Resource          ../基础关键字.txt
+Library           RobotExt.py
+
+*** Variables ***
+@{反馈内容List}
+
+*** Keywords ***
+自定义查询
+    [Arguments]    ${ProjectNo}=null    ${TransactionNo}=null    ${HouseAddress}=null    ${Community}=null    # 流水号,交易编号,物业地址,小区名称
+    Set Selenium Speed    0.5 seconds
+    Run Keyword If    '${ProjectNo}'!='null'    查询并检查是否有数据    .//*[@id='ProjectNo']    ${ProjectNo}
+    Run Keyword If    '${TransactionNo}'!='null'    查询并检查指定列    .//*[@id='TransactionNo']    ${TransactionNo}    1
+    Run Keyword If    '${HouseAddress}'!='null'    查询并检查指定列    .//*[@id='HouseAddress']    ${HouseAddress}    2
+    Run Keyword If    '${Community}'!='null'    查询并检查指定列    .//*[@id='Community']    ${Community}    3
+
+检查指定列的值
+    [Arguments]    ${col}    ${expected}
+    Table Column Should Contain    xpath=.//table[@id='table']    ${col}    ${expected}
+
+查询不到数据检查点
+    ${TableValue}    Get Table Cell    xpath=.//table[@id='table']    2    1
+    Should Be Equal    ${TableValue}    没有找到匹配的记录
+
+无效自定义查询
+    [Arguments]    ${ProjectNo}=null    ${TransactionNo}=null    ${HouseAddress}=null    ${Community}=null    # 流水号,交易编号,物业地址,小区名称
+    Set Selenium Speed    0.5 seconds
+    Run Keyword If    '${ProjectNo}'!='null'    查询并检查指定列    .//*[@id='ProjectNo']    ${ProjectNo}    1    没有找到匹配的记录
+    Run Keyword If    '${TransactionNo}'!='null'    查询并检查指定列    .//*[@id='TransactionNo']    ${TransactionNo}    1    没有找到匹配的记录
+    Run Keyword If    '${HouseAddress}'!='null'    查询并检查指定列    .//*[@id='HouseAddress']    ${HouseAddress}    1    没有找到匹配的记录
+    Run Keyword If    '${Community}'!='null'    查询并检查指定列    .//*[@id='Community']    ${Community}    1    没有找到匹配的记录
+
+根据业务编号查询
+    [Arguments]    ${TransationNo}
+    查询操作    .//*[@id='TransactionNo']    ${TransationNo}
+
+查询操作
+    [Arguments]    ${xpath}    ${value}
+    Input Text    xpath=${xpath}    ${value}
+    Click Button    xpath=.//*[@id='search']
+    Clear Element Text    xpath=${xpath}
+
+反馈
+    [Arguments]    ${TransationNo}
+    Set Selenium Speed    0.5 s
+    根据业务编号查询    ${TransationNo}
+    Click Link    xpath=.//*[@id='table']/tbody/tr[1]/td[last()]/a[text()='反馈']    #点击【反馈】按钮
+    Select From List By Index    xpath=.//*[@id='Content']    1
+    ${time}    Get Time    YYYY-MM-DD hh:mm:ss
+    ${反馈内容}    Set Variable    这是在 ${time} 进行反馈的内容
+    Input Text    xpath=.//*[@id='Remark']    ${反馈内容}
+    Click Button    xpath=.//*[@id='btnFeedBackSubmit']
+    ${isSuee}    Get Text    xpath=.//*[contains(@id,'layui-layer')]/div[2]
+    Should Be Equal    ${isSuee}    操作成功!
+    Click Link    xpath=.//*[contains(@id,'layui-layer')]/div[3]/a
+    @{反馈内容List}    Create List    ${反馈内容}    @{反馈内容List}
+    Set Global Variable    @{反馈内容List}
+
+查询并检查指定列
+    [Arguments]    ${xpath}    ${value}    ${col}    ${expected}=${value}
+    查询操作    ${xpath}    ${value}
+    检查指定列的值    ${col}    ${expected}
+
+查询并检查是否有数据
+    [Arguments]    ${xpath}    ${value}
+    查询操作    ${xpath}    ${value}
+    ${TableValue}    Get Table Cell    xpath=.//table[@id='table']    2    1
+    Should Not Be Equal    ${TableValue}    没有找到匹配的记录
+
+下拉框值对比
+    [Arguments]    ${locator}    ${key}
+    ${selected}    Get Selected List Value    ${locator}
+    ${value}    Get Dict Value    ${key}    &{table}
+    Should Contain    ${selected}    ${value}
+
+文本框值对比
+    [Arguments]    ${locator}    ${key}
+    ${selected}    Get Value    ${locator}
+    ${value}    Get Dict Value    ${key}    &{table}
+    Should Contain    ${selected}    ${value}

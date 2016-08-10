@@ -1,0 +1,220 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          基础关键字.txt
+Library           re
+
+*** Variables ***
+
+*** Keywords ***
+登录
+    打开浏览器
+    ${userName}    ${password}    登录model
+    Input Text    xpath=//*[@id='username']    ${userName}
+    sleep    1
+    Input Text    xpath=//*[@id='password']    ${password}
+    Click Button    name=submit
+
+退出
+    Click Element    xpath=//*[@id='navbar-container']/ul/li[5]/a
+
+询价content
+    set selenium speed    0.3seconds
+    ${var}    随机数
+    comment    点击客户信息
+    Click Element    xpath=//*[@id='ico-collapse']
+    Input Text    xpath=//*[@id='Tel']    13555555555    #客户手机
+    Input Text    xpath=//*[@id='Phone']    020-6716910    #固定电话
+    Input Text    xpath=//*[@id='CustomerName']    郭嘉    #客户姓名
+    Input Text    xpath=//*[@id='Bank']    中国银行    #所属机构
+    Input Text    xpath=//*[@id='Subbranch']    广州分行    #分支机构
+    Input Text    xpath=//*[@id='QQ']    666666    #客户qq
+    Comment    comment    点击询价单信息
+    Click Element    xpath=//*[@id='ico-collapse2']
+    Input Text    xpath=//*[@id='InquiryNo']    ${var}    #估价单编号
+    Input Text    xpath=//*[@id='AppraiseUse']    广州天河房管局    #估价使用方
+    Input Text    xpath=//*[@id='AppraiseDelegatePerson']    敖翔    #估价委托人
+    Input Text    xpath=//*[@id='SetPurpose']    购房    #设定用途
+    Input Text    xpath=//*[@id='AppraisePurpose']    房产抵押    #估价目的
+    Click Element    xpath=//*[@id='AppraiseDate']    #价值时点
+    Click Element    xpath=//*[@id='laydate_today']
+    Input Text    xpath=//*[@id='HouseStruct']    草棚屋    #房屋结构
+    Click Element    xpath=//*[@id='ValidityDate']    #有效期
+    Click Element    xpath=//*[@id='laydate_today']
+    Click Element    xpath=//*[@id='IssueDate']
+    Click Element    xpath=//*[@id='laydate_today']
+    Input Text    xpath=//*[@id='LandPremium']    3    #应补地价
+    Input Text    xpath=//*[@id='MinusNetWorth']    2    #扣后净值
+    Input Text    xpath=//*[@id='DisposeFee']    1    #处置税费
+    comment    估值信息
+    Select From List    xpath=//*[@id='City']    广州市
+    Input Text    xpath=//*[@id='ResidentialAreaName']    大地    #小区名称
+    press key    xpath=//*[@id='ResidentialAreaName']    \\13
+    Clear Element Text    xpath=//*[@id='ResidentialAddress']
+    Input Text    xpath=//*[@id='ResidentialAddress']    大地新村二区    #小区地址
+    Click Element    xpath=//*[@id='BuildingName']
+    sleep    2
+    press key    xpath=//*[@id='BuildingName']    \\13    #楼栋号
+    Input Text    xpath=//*[@id='UnitName']    1单元    #单元号
+    Input Text    xpath=//*[@id='HouseNum']    504    #户号名
+    Select From List    xpath=//*[@id='PropertyType']    成套住宅    #房屋类型
+    Input Text    xpath=//*[@id='BuildingArea']    100    #建筑面积
+    Input Text    xpath=//*[@id='Floor']    20    #所在楼层
+    Input Text    xpath=//*[@id='MaxFloor']    35    #总楼层
+    Select From List    xpath=//*[@id='HouseType']    三居室    #户型
+    Input Text    xpath=//*[@id='BuildedYear']    1988    #建成年代
+    Select From List    xpath=//*[@id='Toword']    南    #朝向
+    Select From List    xpath=//*[@id='Decoration']    精装修    #装修情况
+    Select From List    xpath=//*[@id='SpecialInfo']    复式    #特殊因素
+    Select From List    xpath=//*[@id='InquirySource']    内部市场    #询价来源
+    Input Text    xpath=//*[@id='Remark']    这是备注    #备注
+
+注册
+    set selenium speed    0.3seconds
+    ${var}    随机数
+    Input Text    xpath=//*[@id='companynames']    广州云房公司+${var}
+    Input Text    xpath=//*[@id='companyaddress']    中环大厦水荫路
+    Input Text    xpath=//*[@id='adminusername']    ${var}
+    Input Text    xpath=//*[@id='companypassword']    111111
+    Click Element    xpath=//*[@id='companycity']
+    Execute Javascript    jquery=$('#div_select_city_sub_menu').css('display','inline')
+    Wait Until Element Is Visible    xpath=//*[@id='div_select_city_sub_menu']/p/a[1]
+    Click Element    xpath=//*[@id='div_select_city_sub_menu']/p/a[1]
+    Input Text    xpath=//*[@id='companycontacts']    敖翔
+    Input Text    xpath=//*[@id='contactsnumber']    13666666666
+    Choose File    xpath=//*[@id='companymaterial']    C:/Users/Administrator/Desktop/1.jpg
+    Click Element    xpath=//*[@id='companyregister']
+    Wait Until Page Contains    确定    60    false
+
+打开询价
+    set selenium speed    0.5seconds
+    Click Element    xpath=//*[@id="sidebar"]/ul/li[1]/a/span    #点击询价
+
+询价建筑面积循环判断
+    [Arguments]    ${retNum}    ${table}    ${tbody}
+    ${start}    Evaluate    re.search('^\\d{2,3}','${retNum}').group(0)    re
+    ${mid}    Evaluate    re.search('(~\\d{2,3})','${retNum}').group(0)    re
+    ${last}    Evaluate    '${mid}'[1:]
+    Execute Javascript    jquery=num=$('#${tbody}').children('tr').length    #原来不需要定义标识符var，坑啊
+    ${num}    Execute Javascript    return num
+    Convert To Integer    ${num}
+    Run Keyword Unless    ${num}==0    询价建筑面积循环语句    ${num}    ${start}    ${last}    ${table}
+    [Teardown]
+
+询价建筑面积循环语句
+    [Arguments]    ${num}    ${start}    ${last}    ${table}
+    : FOR    ${i}    IN RANGE    ${num}
+    \    ${temp}    Get Table Cell    xpath=//*[@id="${table}"]/table    ${i+2}    7
+    \    Run Keyword If    ${start}<${temp}<${last}    Continue For Loop    #假如正确，继续循环
+
+点击立项受理
+    Click Element    xpath=//*[@id="sidebar"]/ul/li[2]/a/span
+
+点击立项
+    Click Element    xpath=//*[@id="sidebar"]/ul/li[2]/ul/li[1]
+
+点击立项列表
+    Click Element    xpath=//*[@id="sidebar"]/ul/li[2]/ul/li[2]
+
+点击添加询价
+    Click Element    xpath=//*[@id="sidebar"]/ul/li[1]/ul/li[1]/a
+
+点击询价列表
+    Click Element    xpath=//*[@id="sidebar"]/ul/li[1]/ul/li[2]
+
+项目审核列表数据
+    [Arguments]    ${table}    ${table1}    ${table2}    ${查询条件}    ${查询条件名}
+    Comment    公共列表    ${table}    ${table1}    ${table2}    ${查询条件}    ${查询条件名}
+    公共流水号    ${查询条件}
+    查询按钮
+    sleep    3
+    Click Element    xpath=//*[@id="${table}"]/${table2}/tr/td[8]/a[4]
+    是按钮
+
+列表循环语句
+    [Arguments]    ${num}    ${row}    ${查询条件}    ${table}
+    : FOR    ${i}    IN RANGE    ${num}
+    \    log    ${row}
+    \    ${temp}    Get Table Cell    xpath=//*[@id="${table}"]    ${i+2}    ${row}
+    \    log    ${temp}
+    \    Run Keyword And Continue On Failure    Run Keyword If    '${temp}'=='${查询条件}'    log    pass
+    \    ...    ELSE    Fail
+    \    Comment    Continue For Loop
+    \    Comment    Run Keyword If    ${start}<${temp}<${last}    Continue For Loop    #假如正确，继续循环
+
+公共列表
+    [Arguments]    ${table}    ${table1}    ${table2}    ${查询条件}    ${查询条件名}
+    sleep    2
+    ${列表数目显示模式}    get text    xpath=//button[@data-toggle='dropdown']
+    ${列表总共数据数}    get text    xpath=//span[contains(@class,'pagination-info')]
+    log    ${列表总共数据数}
+    ${显示第}    Findall    显示第 (.*) 到    ${列表总共数据数}
+    ${到第}    Findall    到第 (.*) 条记录，总    ${列表总共数据数}
+    ${总共多少条}    Findall    总共 (.*) 条    ${列表总共数据数}
+    log    ${总共多少条[0]}
+    Run Keyword If    '${列表数目显示模式}'!=''    页数    ${总共多少条[0]}    ${列表数目显示模式}
+    Comment    获取行数
+    Execute Javascript    jquery=num=$('#${table}').children('tbody').children('tr').length    #原来不需要定义标识符var，坑啊
+    ${num}    Execute Javascript    return num
+    Convert To Integer    ${num}
+    Comment    获取列数    xpath=/html/body/div[1]/div[1]/div[2]/div[1]/table/thead/tr/th
+    ${b}    Get Matching Xpath Count    xpath=//*[@id="${table}"]/${table1}/tr/th
+    ${b}    Evaluate    ${b}+1
+    Comment    获取列表框表头
+    : FOR    ${row}    IN RANGE    1    ${b}
+    \    log    ${row}
+    \    Comment    \    xpath=/html/body/div[1]/div[1]/div[2]/div[1]/table/thead/tr/th[${row}]/div[1]
+    \    ${字段值}    Get Text    xpath=//*[@id="${table}"]/${table1}/tr/th[${row}]/div[1]
+    \    Comment    sleep    2
+    \    Run Keyword If    '${字段值}'=='${查询条件名}'    列表循环语句    ${num}    ${row}    ${查询条件}
+    \    ...    ${table}
+
+页数
+    [Arguments]    ${总共多少条[0]}    ${列表数目显示模式}
+    ${页数}    Evaluate    ${总共多少条[0]}/${列表数目显示模式}
+
+按流水号查询
+    [Arguments]    ${table}    ${table1}    ${table2}    ${流水号}    ${查询条件名}
+    公共流水号    ${流水号}
+    查询按钮
+    Comment    wait until element is visible    xpath=//*[@id="${table}"]/tbody/tr/td[2]
+    Comment    ${项目审核流水号}    get text    xpath=//*[@id="${table}"]/tbody/tr/td[2]
+    公共列表    ${table}    ${table1}    ${table2}    ${流水号}    ${查询条件名}
+    清空公共流水号
+
+按报告号查询
+    [Arguments]    ${table}    ${table1}    ${table2}    ${报告号}    ${查询条件名}
+    公共报告号    ${报告号}
+    查询按钮
+    Comment    wait until element is visible    xpath=//*[@id="${table}"]/tbody/tr/td[3]
+    Comment    ${项目审核报告号}    get text    xpath=//*[@id="${table}"]/tbody/tr/td[3]
+    公共列表    ${table}    ${table1}    ${table2}    ${报告号}    ${查询条件名}
+    清空公共报告号
+
+按项目地址查询
+    [Arguments]    ${table}    ${table1}    ${table2}    ${项目地址}    ${查询条件名}
+    公共项目地址    ${项目地址}
+    查询按钮
+    Comment    wait until element is visible    xpath=//*[@id="${table}"]/tbody/tr/td[4]
+    Comment    ${项目审核项目地址}    get text    xpath=//*[@id="${table}"]/tbody/tr/td[4]
+    公共列表    ${table}    ${table1}    ${table2}    ${项目地址}    ${查询条件名}
+    清空公共项目地址
+
+按小区名称查询
+    [Arguments]    ${table}    ${table1}    ${table2}    ${小区名称}    ${查询条件名}
+    公共小区名称    ${小区名称}
+    查询按钮
+    Comment    wait until element is visible    xpath=//*[@id="${table}"]/tbody/tr/td[6]
+    Comment    ${项目审核小区名称}    get text    xpath=//*[@id="${table}"]/tbody/tr/td[6]
+    公共列表    ${table}    ${table1}    ${table2}    ${小区名称}    ${查询条件名}
+    清空公共小区名称
+
+查询一条记录
+    [Arguments]    ${tablePath}    ${col}    ${fieldId}
+    Set Selenium Speed    0.5
+    ${cellValue}    Get Table Cell    ${tablePath}    2    ${col}
+    Input Text    id=${fieldId}    ${cellValue}
+    查询按钮
+    ${expectCellValue}    Get Table Cell    ${tablePath}    2    ${col}
+    Run Keyword And Continue On Failure    Should Be Equal    ${cellValue}    ${expectCellValue}
+    Clear Element Text    id=${fieldId}
+    查询按钮

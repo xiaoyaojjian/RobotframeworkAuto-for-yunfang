@@ -1,0 +1,466 @@
+*** Settings ***
+Resource          ../基础关键字.txt
+Resource          ../业务关键字.txt
+
+*** Keywords ***
+项目审核查询
+    [Arguments]    ${流水号}    ${报告号}    ${项目地址}    ${小区名称}    ${审核状态}
+    Comment    项目审核按钮
+    项目审核菜单按钮
+    窗口
+    sleep    2
+    Comment    公共流水号    ${流水号}
+    Comment    查询按钮
+    Comment    wait until element is visible    xpath=//*[@id="tableList"]/tbody/tr/td[2]
+    Comment    ${项目审核流水号}    get text    xpath=//*[@id="tableList"]/tbody/tr/td[2]
+    Comment    Should Be Equal    ${流水号}    ${项目审核流水号}
+    Comment    清空公共流水号
+    Comment    公共报告号    ${报告号}
+    Comment    查询按钮
+    Comment    wait until element is visible    xpath=//*[@id="tableList"]/tbody/tr/td[3]
+    Comment    ${项目审核报告号}    get text    xpath=//*[@id="tableList"]/tbody/tr/td[3]
+    Comment    Should Be Equal    ${报告号}    ${项目审核报告号}
+    Comment    清空公共报告号
+    Comment    公共项目地址    ${项目地址}
+    Comment    查询按钮
+    Comment    wait until element is visible    xpath=//*[@id="tableList"]/tbody/tr/td[4]
+    Comment    ${项目审核项目地址}    get text    xpath=//*[@id="tableList"]/tbody/tr/td[4]
+    Comment    Should Be Equal    ${项目地址}    ${项目审核项目地址}
+    Comment    清空公共项目地址
+    Comment    公共小区名称    ${小区名称}
+    Comment    查询按钮
+    Comment    wait until element is visible    xpath=//*[@id="tableList"]/tbody/tr/td[6]
+    Comment    ${项目审核小区名称}    get text    xpath=//*[@id="tableList"]/tbody/tr/td[6]
+    Comment    Should Be Equal    ${小区名称}    ${项目审核小区名称}
+    Comment    清空公共小区名称
+    Select From List By Value    id=IsApprove    ${审核状态}
+    查询按钮
+    wait until element is visible    xpath=//*[@id="tableList"]/tbody/tr/td[5]
+    ${项目审核审核状态}    get text    xpath=//*[@id="tableList"]/tbody/tr/td[5]
+
+新建报告
+    [Arguments]    ${小区名称}    ${小区地址}    ${物业类型}    ${项目分类}    ${估价目的}    ${报告类型}
+    ...    ${路径}
+    Comment    项目审核按钮
+    项目审核菜单按钮
+    窗口
+    sleep    2
+    新建报告按钮
+    ${yyyy}    ${mm}    ${dd}    ${hour}    ${min}    ${sec}    get time
+    ...    year,month,day,hour,min,sec
+    ${报告号}    Set Variable    ${yyyy}${mm}${dd}${hour}${min}${sec}
+    公共报告号    ${报告号}
+    ${随机送}    随机数
+    公共小区名称    ${小区名称}
+    公共小区地址    ${小区地址}
+    公共物业类型    ${物业类型}
+    公共项目分类    ${项目分类}
+    公共估价目的    ${估价目的}
+    公共报告类型    ${报告类型}
+    sleep    2
+    上传文件    ${路径}
+    保存按钮
+    sleep    30
+    确定按钮
+    sleep    2
+    ${新报告编号}    get text    xpath=//*[@id="tableList"]/tbody/tr[1]/td[3]
+    ${新流水号}    get text    xpath=//*[@id="tableList"]/tbody/tr[1]/td[2]
+    ${新项目地址}    get text    xpath=//*[@id="tableList"]/tbody/tr[1]/td[4]
+    ${新审核状态}    get text    xpath=//*[@id="tableList"]/tbody/tr[1]/td[5]
+    ${新小区名称}    get text    xpath=//*[@id="tableList"]/tbody/tr[1]/td[6]
+    ${新报告类型}    get text    xpath=//*[@id="tableList"]/tbody/tr[1]/td[7]
+    Should Be Equal    ${新报告编号}    ${报告号}
+    Should Be Equal    ${新项目地址}    ${小区地址}
+    Should Be Equal    ${报告类型}    ${新报告类型}
+    Should Be Equal    ${小区名称}    ${新小区名称}
+    上传报告    ${路径}
+    保存按钮
+    sleep    30
+    确定按钮
+    sleep    2
+    Comment    下载报告
+    Click Element    xpath=//*[@id="tableList"]/tbody/tr[1]/td[8]/a[5]
+    Comment    查看详细
+
+上传报告
+    [Arguments]    ${project_no}
+    项目审核菜单按钮
+    窗口
+    sleep    2
+    Comment    \    \    \    \    \    ${EMPTY}
+    ...    \    \    \    \    \    ${EMPTY}
+    ...    \    \    \    \    \    ${EMPTY}
+    ...    \    \    \    \    \    ${EMPTY}
+    ...    \    \    \    \    \    ${EMPTY}
+    ...    \    \    \    \    \    ${EMPTY}
+    ...    \    \    \    \    \    ${EMPTY}
+    ...    \    \    \    \    \    ${EMPTY}
+    ...    \    \    \    \    \    ${EMPTY}
+    ...    \    \    \    \    \    ${EMPTY}
+    ...    \    \    \    \    \    ${EMPTY}
+    ...    \    \    \    \    \    ${EMPTY}
+    ...    \    \    ${报告年度}    ${报告月度}    ${项目名称}    ${估价目的}
+    ...    ${目的描述}    ${项目所在省}    ${项目所在市}    ${项目区县}    ${小区地址}    ${楼道号}
+    ...    ${单元号}    ${户号}    ${余下地址}    ${项目完整地址}    ${项目推广名}    ${估价委托人}
+    ...    ${报告使用方}    ${支行}    ${报告有效期}    ${实地勘察期}    ${价值日期}    ${作业起始时间}
+    ...    ${作业终止时间}    ${现场勘察员}    ${报告撰写人员}    ${评估总价(万元)}    ${评估单价(元/㎡)}    ${估价师1}
+    ...    ${估价师2}    ${估价师合并}    ${环线}    ${估价方法1}    ${估价方法2}    ${方法汇总}
+    ...    ${其他影响因素}    ${成交总价(万元)}    ${成交单价(元/㎡)}    ${交易日期}    ${物理结构是否变化}    ${处置扣税额(万元)}
+    ...    ${扣税口净值(万元)}    ${补交出让金/综合地价款（元）}    ${使用现状}    ${土地增值税(元)}    ${扣除土地税后(万元)}    ${优先受偿款}
+    ...    ${登记用途}    ${现状用途}    ${建筑结构}    ${建成年代 }    ${所在楼层}    ${总楼层}
+    ...    ${楼层}    ${户型}    ${房屋所有权号}    ${房屋所有人}    ${建筑面积（㎡）}    ${最高使用年限}
+    ...    ${产别}    ${装修程度}    ${产权性质}    ${剩余经济寿命}    ${土地使用权人}    ${土地用途}
+    ...    ${使用权类型}    ${土地使用权面积(㎡) }    ${图号 }    ${地号}    ${终止日期}    ${剩余土地年限(年)}
+    ...    ${国有土地使用号}    ${土地坐落}    ${借款人姓名}    ${借款人身份证}
+    ${table}    Set Variable    tableList
+    ${table1}    Set Variable    thead
+    ${table2}    Set Variable    tbody
+    按流水号查询    ${table}    ${table1}    ${table2}    ${project_no}    流水号
+    Click Element    xpath=//*[@id="tableList"]/tbody/tr[1]/td[8]/a[1]
+    sleep    1
+    Choose File    id=ReportFile    E:/测试相关文档/评E评系统/Script/PEP_Simple/项目审核/光大银行12.doc
+    保存按钮
+    sleep    30
+    确定按钮
+    Unselect Frame
+
+汇总数据
+    [Arguments]    ${报告年度}    ${报告月度}    ${项目名称}    ${估价目的}    ${目的描述}    ${项目所在省}
+    ...    ${项目所在市}    ${项目区县}    ${小区地址}    ${楼道号}    ${单元号}    ${户号}
+    ...    ${余下地址}    ${项目完整地址}    ${项目推广名}    ${估价委托人}    ${报告使用方}    ${支行}
+    ...    ${报告有效期}    ${实地勘察期}    ${价值日期}    ${作业起始时间}    ${作业终止时间}    ${现场勘察员}
+    ...    ${报告撰写人员}    ${评估总价(万元)}    ${评估单价(元/㎡)}    ${估价师1}    ${估价师2}    ${估价师合并}
+    ...    ${环线}    ${估价方法1}    ${估价方法2}    ${方法汇总}    ${其他影响因素}    ${成交总价(万元)}
+    ...    ${成交单价(元/㎡)}    ${交易日期}    ${物理结构是否变化}    ${处置扣税额(万元)}    ${扣税口净值(万元)}    ${补交出让金/综合地价款（元）}
+    ...    ${使用现状}    ${土地增值税(元)}    ${扣除土地税后(万元)}    ${优先受偿款}    ${登记用途}    ${现状用途}
+    ...    ${建筑结构}    ${建成年代 }    ${所在楼层}    ${总楼层}    ${楼层}    ${户型}
+    ...    ${房屋所有权号}    ${房屋所有人}    ${建筑面积（㎡）}    ${最高使用年限}    ${产别}    ${装修程度}
+    ...    ${产权性质}    ${剩余经济寿命}    ${土地使用权人}    ${土地用途}    ${使用权类型}    ${土地使用权面积(㎡) }
+    ...    ${图号 }    ${地号}    ${终止日期}    ${剩余土地年限(年)}    ${国有土地使用号}    ${土地坐落}
+    ...    ${借款人姓名}    ${借款人身份证}
+    Click Element    xpath=//*[@id="tableList"]/tbody/tr[1]/td[8]/a[6]
+    Comment    \    \    现房成套住宅
+    ${所属公司}    ${所属部门}    ${报告编号}    现房成套住宅    ${报告年度}    ${报告月度}    ${项目名称}
+    ...    ${估价目的}    ${目的描述}    ${项目所在省}    ${项目所在市}    ${项目区县}    ${小区地址}
+    ...    ${楼道号}    ${单元号}    ${户号}    ${余下地址}    ${项目完整地址}    ${项目推广名}
+    ...    ${估价委托人}    ${报告使用方}    ${支行}    ${报告有效期}    ${实地勘察期}    ${价值日期}
+    ...    ${作业起始时间}    ${作业终止时间}    ${现场勘察员}    ${报告撰写人员}    ${评估总价(万元)}    ${评估单价(元/㎡)}
+    ...    ${估价师1}    ${估价师2}    ${估价师合并}    ${环线}    ${估价方法1}    ${估价方法2}
+    ...    ${方法汇总}    ${其他影响因素}    ${成交总价(万元)}    ${成交单价(元/㎡)}    ${交易日期}    ${物理结构是否变化}
+    ...    ${处置扣税额(万元)}    ${扣税口净值(万元)}    ${补交出让金/综合地价款（元）}    ${使用现状}    ${土地增值税(元)}    ${扣除土地税后(万元)}
+    ...    ${优先受偿款}    ${登记用途}    ${现状用途}    ${建筑结构}    ${建成年代 }    ${所在楼层}
+    ...    ${总楼层}    ${楼层}    ${户型}    ${房屋所有权号}    ${房屋所有人}    ${建筑面积（㎡）}
+    ...    ${最高使用年限}    ${产别}    ${装修程度}    ${产权性质}    ${剩余经济寿命}    ${土地使用权人}
+    ...    ${土地用途}    ${使用权类型}    ${土地使用权面积(㎡) }    ${图号 }    ${地号}    ${终止日期}
+    ...    ${剩余土地年限(年)}    ${国有土地使用号}    ${土地坐落}    ${借款人姓名}    ${借款人身份证}
+    [Teardown]    Set Global Variable    ${借款人身份证}
+    [Return]    ${所属公司}    ${所属部门}    ${报告编号}    ${报告年度}    ${报告月度}    ${项目名称}
+    ...    ${估价目的}    ${目的描述}    ${项目所在省}    ${项目所在市}    ${项目区县}    ${小区地址}
+    ...    ${楼道号}    ${单元号}    ${户号}    ${余下地址}    ${项目完整地址}    ${项目推广名}
+    ...    ${估价委托人}    ${报告使用方}    ${支行}    ${报告有效期}    ${实地勘察期}    ${价值日期}
+    ...    ${作业起始时间}    ${作业终止时间}    ${现场勘察员}    ${报告撰写人员}    ${评估总价(万元)}    ${评估单价(元/㎡)}
+    ...    ${估价师1}    ${估价师2}    ${估价师合并}    ${环线}    ${估价方法1}    ${估价方法2}
+    ...    ${方法汇总}    ${其他影响因素}    ${成交总价(万元)}    ${成交单价(元/㎡)}    ${交易日期}    ${物理结构是否变化}
+    ...    ${处置扣税额(万元)}    ${扣税口净值(万元)}    ${补交出让金/综合地价款（元）}    ${使用现状}    ${土地增值税(元)}    ${扣除土地税后(万元)}
+    ...    ${优先受偿款}    ${登记用途}    ${现状用途}    ${建筑结构}    ${建成年代 }    ${所在楼层}
+    ...    ${总楼层}    ${楼层}    ${户型}    ${房屋所有权号}    ${房屋所有人}    ${建筑面积（㎡）}
+    ...    ${最高使用年限}    ${产别}    ${装修程度}    ${产权性质}    ${剩余经济寿命}    ${土地使用权人}
+    ...    ${土地用途}    ${使用权类型}    ${土地使用权面积(㎡) }    ${图号 }    ${地号}    ${终止日期}
+    ...    ${剩余土地年限(年)}    ${国有土地使用号}    ${土地坐落}    ${借款人姓名}    ${借款人身份证}
+
+查看详细
+    Click Element    xpath=//*[@id="tableList"]/tbody/tr[1]/td[8]/a[2]
+    Comment    基本信息    ${所属公司}    ${所属部门}    ${报告编号}    ${报告年度}    ${报告月度}
+    ...    ${项目名称}    ${估价目的}    ${目的描述}    ${项目所在省}    ${项目所在市}    ${项目区县}
+    ...    ${小区地址}    ${楼道号}    ${单元号}    ${户号}    ${余下地址}    ${项目完整地址}
+    ...    ${项目推广名}    ${估价委托人}    ${报告使用方}    ${支行}    ${报告有效期}    ${实地勘察期}
+    ...    ${价值日期}    ${作业起始时间}    ${作业终止时间}    ${现场勘察员}    ${报告撰写人员}    ${评估总价(万元)}
+    ...    ${评估单价(元/㎡)}    ${估价师1}    ${估价师2}    ${估价师合并}    ${环线}    ${估价方法1}
+    ...    ${估价方法2}    ${方法汇总}    ${其他影响因素}    ${成交总价(万元)}    ${成交单价(元/㎡)}    ${交易日期}
+    ...    ${物理结构是否变化}    ${处置扣税额(万元)}    ${扣税口净值(万元)}    ${补交出让金/综合地价款（元）}    ${使用现状}    ${土地增值税(元)}
+    ...    ${扣除土地税后(万元)}    ${优先受偿款}    ${登记用途}    ${现状用途}    ${建筑结构}    ${建成年代 }
+    ...    ${所在楼层}    ${总楼层}    ${楼层}    ${户型}    ${房屋所有权号}    ${房屋所有人}
+    ...    ${建筑面积（㎡）}    ${最高使用年限}    ${产别}    ${装修程度}    ${产权性质}    ${剩余经济寿命}
+    ...    ${土地使用权人}    ${土地用途}    ${使用权类型}    ${土地使用权面积(㎡) }    ${图号 }    ${地号}
+    ...    ${终止日期}    ${剩余土地年限(年)}    ${国有土地使用号}    ${土地坐落}    ${借款人姓名}    ${借款人身份证}
+    Comment    sleep    3
+    流程跟进
+    sleep    2
+    报告历史记录
+
+基本信息
+    [Arguments]    ${所属公司}    ${所属部门}    ${报告编号}    ${报告年度}    ${报告月度}    ${项目名称}
+    ...    ${估价目的}    ${目的描述}    ${项目所在省}    ${项目所在市}    ${项目区县}    ${小区地址}
+    ...    ${楼道号}    ${单元号}    ${户号}    ${余下地址}    ${项目完整地址}    ${项目推广名}
+    ...    ${估价委托人}    ${报告使用方}    ${支行}    ${报告有效期}    ${实地勘察期}    ${价值日期}
+    ...    ${作业起始时间}    ${作业终止时间}    ${现场勘察员}    ${报告撰写人员}    ${评估总价(万元)}    ${评估单价(元/㎡)}
+    ...    ${估价师1}    ${估价师2}    ${估价师合并}    ${环线}    ${估价方法1}    ${估价方法2}
+    ...    ${方法汇总}    ${其他影响因素}    ${成交总价(万元)}    ${成交单价(元/㎡)}    ${交易日期}    ${物理结构是否变化}
+    ...    ${处置扣税额(万元)}    ${扣税口净值(万元)}    ${补交出让金/综合地价款（元）}    ${使用现状}    ${土地增值税(元)}    ${扣除土地税后(万元)}
+    ...    ${优先受偿款}    ${登记用途}    ${现状用途}    ${建筑结构}    ${建成年代 }    ${所在楼层}
+    ...    ${总楼层}    ${楼层}    ${户型}    ${房屋所有权号}    ${房屋所有人}    ${建筑面积（㎡）}
+    ...    ${最高使用年限}    ${产别}    ${装修程度}    ${产权性质}    ${剩余经济寿命}    ${土地使用权人}
+    ...    ${土地用途}    ${使用权类型}    ${土地使用权面积(㎡) }    ${图号 }    ${地号}    ${终止日期}
+    ...    ${剩余土地年限(年)}    ${国有土地使用号}    ${土地坐落}    ${借款人姓名}    ${借款人身份证}
+    Comment    项目信息
+    ${基报告号}    Get Text    xpath=//td[@id='baseReportNo']
+    ${基流水号}    get Text    xpath=//td[@id='baseProjectNo']
+    ${基地址}    get Text    xpath=//td[@id='baseProjectAddress']
+    ${基估价委托人}    get Text    xpath=//td[@id='basePrincipal']
+    ${基建成年代}    get Text    xpath=//td[@id='baseBuildedYear']
+    ${基询值单价(元/㎡)}    get Text    xpath=//td[@id='baseInquiryPrice']
+    ${基询值总价(万元)}    get Text    xpath=//td[@id='baseInquiryResult']
+    ${基项目分类}    get Text    xpath=//td[@id='baseProjectType']
+    ${基物业分类}    get Text    xpath=//td[@id='basePropertyType']
+    ${基估价目的}    get Text    xpath=//td[@id='baseBusinessType']
+    ${基所属机构}    get Text    xpath=//td[@id='baseDepartmentId']
+    ${基客户姓名}    get Text    xpath=//td[@id='baseCustomerName']
+    Comment    汇总数据
+    ${基所属公司}    get Text    xpath=//td[@id='sumCompany']
+    ${基所属部门}    get Text    xpath=//td[@id='sumDepartment']
+    ${基项目名称}    get Text    xpath=//td[@id='sumProjectName']
+    ${基报告完整编号}    get Text    xpath=//td[@id='sumReportNo']
+    ${基报告年度}    get Text    xpath=//td[@id='sumReportYear']
+    ${基报告月度}    get Text    xpath=//td[@id='sumReportMonth']
+    ${基估价目的}    get Text    xpath=//td[@id='sumEvalGoal']
+    ${基目的描述}    get Text    xpath=//td[@id='sumGoalDescription']
+    ${基估价委托人}    get Text    xpath=//td[@id='sumEvalEntrust']
+    ${基报告使用方}    get Text    xpath=//td[@id='sumReportUse']
+    ${基支行}    get Text    xpath=//td[@id='sumSubbranch']
+    ${基现场勘查人员}    get Text    xpath=//td[@id='sumSurveyPeople']
+    ${基报告撰写人员}    get Text    xpath=//td[@id='sumReportWriting']
+    ${基项目推广名}    get Text    xpath=//td[@id='sumProjectPopularizeName']
+    ${基项目所在省}    get Text    xpath=//td[@id='sumProjectProvince']
+    ${基项目所在市}    get Text    xpath=//td[@id='sumProjectCity']
+    ${基项目区县}    get Text    xpath=//td[@id='sumProjectDistrict']
+    ${基余下地址}    get Text    xpath=//td[@id='sumOtherAddress']
+    ${基项目完整地址}    get Text    xpath=//td[@id='sumProjectAddress']
+    ${基实地查勘期}    get Text    xpath=//td[@id='sumSurveyTime']
+    ${基价值日期}    get Text    xpath=//td[@id='sumWorthTime']
+    ${基作业起始日期}    get Text    xpath=//td[@id='sumJobStartTime']
+    ${基作业终止日期}    get Text    xpath=//td[@id='sumJobEndTime']
+    ${基报告有效期}    get Text    xpath=//td[@id='sumReportValidityTerm']
+    ${基估价师1}    get Text    xpath=//td[@id='sumQuantitySurveyor1']
+    ${基估价师2}    get Text    xpath=//td[@id='sumQuantitySurveyor2']
+    ${基估价师合并}    get Text    xpath=//td[@id='sumQuantitySurveyorJoin']
+    ${基估价方法1}    get Text    xpath=//td[@id='sumEvalMethod1']
+    ${基估价方法2}    get Text    xpath=//td[@id='sumEvalMethod2']
+    ${基方法汇总}    get Text    xpath=//td[@id='sumEvalMethodJoin']
+    ${基评估总价（万元）}    get Text    xpath=//td[@id='sumEvaluateTotal']
+    ${基评估单价（元）}    get Text    xpath=//td[@id='sumEvaluatePrice']
+    ${基房屋所有权证证号/工程许可证号}    get Text    xpath=//td[@id='sumHouserOwnerNo']
+    ${基房屋所有权人}    get Text    xpath=//td[@id='sumHouserOwner']
+    ${基产权性质}    get Text    xpath=//td[@id='sumPropertyNature']
+    ${基建筑面积（㎡）}    get Text    xpath=//td[@id='sumArchitectureArea']
+    ${基建筑结构}    get Text    xpath=//td[@id='sumBuildingStructure']
+    ${基建成年代}    get Text    xpath=//td[@id='sumBuiltYear']
+    ${基登记用途}    get Text    xpath=//td[@id='sumRegisterUse']
+    ${基所在楼层}    get Text    xpath=//td[@id='sumFloor']
+    ${基总楼层}    get Text    xpath=//td[@id='sumMaxFloor']
+    ${基楼层}    get Text    xpath=//td[@id='sumFloorJoin']
+    ${基户型}    get Text    xpath=//td[@id='sumHouseType']
+    ${基装修程度}    get Text    xpath=//td[@id='sumDecoration']
+    ${基国有土地使用证号}    get Text    xpath=//td[@id='sumLandUserNo']
+    ${基土地坐落}    get Text    xpath=//td[@id='sumLandAddress']
+    ${基土地使用权人}    get Text    xpath=//td[@id='sumLandUsePeople']
+    ${基土地使用权类型}    get Text    xpath=//td[@id='sumLandUseType']
+    ${基土地使用权面积（㎡）}    get Text    xpath=//td[@id='sumLandUseArea']
+    ${基剩余土地年期（年）}    get Text    xpath=//td[@id='sumLandSpareYear']
+    ${基剩余经济寿命（年）}    get Text    xpath=//td[@id='sumSpareEconomicsYear']
+    ${基最高使用年限（年）}    get Text    xpath=//td[@id='sumMaxUseYear']
+    ${基土地用途}    get Text    xpath=//td[@id='sumLandUse']
+    ${基终止日期}    get Text    xpath=//td[@id='sumLandEndTime']
+    ${基其他影响因素}    get Text    xpath=//td[@id='sumOtherInfluenceFactor']
+    ${基交易日期}    get Text    xpath=//td[@id='sumBusinessTime']
+    ${基环线}    get Text    xpath=//td[@id='sumLoopLine']
+    ${基成交总价（万元）}    get Text    xpath=//td[@id='sumDealTotal']
+    ${基成交单价（元/㎡）}    get Text    xpath=//td[@id='sumDealPrice']
+    Should Be Equal    ${基所属公司}    ${所属公司}
+    Should Be Equal    ${基所属部门}    ${所属部门}
+    Should Be Equal    ${基报告完整编号}    ${报告编号}
+    Should Be Equal    ${基项目名称}    ${项目名称}
+    Should Be Equal    ${基报告年度}    ${报告年度}
+    Should Be Equal    ${基报告月度}    ${报告月度}
+    Should Be Equal    ${基估价目的}    ${估价目的}
+    Should Be Equal    ${基目的描述}    ${目的描述}
+    Should Be Equal    ${基估价委托人}    ${估价委托人}
+    Should Be Equal    ${基报告使用方}    ${报告使用方}
+    Should Be Equal    ${基支行}    ${支行}
+    Should Be Equal    ${基现场勘查人员}    ${现场勘察员}
+    Should Be Equal    ${基报告撰写人员}    ${报告撰写人员}
+    Should Be Equal    ${基项目推广名}    ${项目推广名}
+    Should Be Equal    ${基项目所在省}    ${项目所在省}
+    Should Be Equal    ${基项目所在市}    ${项目所在市}
+    Should Be Equal    ${基项目区县}    ${项目区县}
+    Should Be Equal    ${基余下地址}    ${余下地址}
+    Should Be Equal    ${基项目完整地址}    ${项目完整地址}
+    Should Be Equal    ${基实地查勘期}    ${实地勘察期}
+    Should Be Equal    ${基价值日期}    ${价值日期}
+    Should Be Equal    ${基作业起始日期}    ${作业起始时间}
+    Should Be Equal    ${基作业终止日期}    ${作业终止时间}
+    Should Be Equal    ${基报告有效期}    ${报告有效期}
+    Should Be Equal    ${基估价师1}    ${估价师1}
+    Should Be Equal    ${基估价师2}    ${估价师2}
+    Should Be Equal    ${基估价师合并}    ${估价师合并}
+    Should Be Equal    ${基估价方法1}    ${估价方法1}
+    Should Be Equal    ${基估价方法2}    ${估价方法2}
+    Should Be Equal    ${基方法汇总}    ${方法汇总}
+    Should Be Equal    ${基评估总价（万元）}    ${评估总价(万元)}
+    Should Be Equal    ${基评估单价（元）}    ${评估单价(元/㎡)}
+    Should Be Equal    ${基房屋所有权证证号/工程许可证号}    ${房屋所有权号}
+    Should Be Equal    ${基房屋所有权人}    ${房屋所有人}
+    Should Be Equal    ${基产权性质}    ${产权性质}
+    Should Be Equal    ${基建筑面积（㎡）}    ${建筑面积（㎡）}
+    Should Be Equal    ${基建筑结构}    ${建筑结构}
+    Should Be Equal    ${基建成年代}    ${建成年代 }
+    Should Be Equal    ${基登记用途}    ${登记用途}
+    Should Be Equal    ${基所在楼层}    ${所在楼层}
+    Should Be Equal    ${基总楼层}    ${总楼层}
+    Should Be Equal    ${基楼层}    ${楼层}
+    Should Be Equal    ${基户型}    ${户型}
+    Should Be Equal    ${基装修程度}    ${装修程度}
+    Should Be Equal    ${基国有土地使用证号}    ${国有土地使用号}
+    Should Be Equal    ${基土地坐落}    ${土地坐落}
+    Should Be Equal    ${基土地使用权人}    ${土地使用权人}
+    Should Be Equal    ${基土地使用权类型}    ${使用权类型}
+    Should Be Equal    ${基土地使用权面积（㎡）}    ${土地使用权面积(㎡) }
+    Should Be Equal    ${基剩余土地年期（年）}    ${剩余土地年限(年)}
+    Should Be Equal    ${基剩余经济寿命（年）}    ${剩余经济寿命}
+    Should Be Equal    ${基最高使用年限（年）}    ${最高使用年限}
+    Should Be Equal    ${基土地用途}    ${土地用途}
+    Should Be Equal    ${基终止日期}    ${终止日期}
+    Should Be Equal    ${基其他影响因素}    ${其他影响因素}
+
+流程跟进
+    Click Element    xpath=//a[contains(.,'流程跟进')]
+
+报告历史记录
+    Click Element    xpath=//a[contains(.,'报告历史数据')]
+
+现房成套住宅
+    [Arguments]    ${报告年度}    ${报告月度}    ${项目名称}    ${估价目的}    ${目的描述}    ${项目所在省}
+    ...    ${项目所在市}    ${项目区县}    ${小区地址}    ${楼道号}    ${单元号}    ${户号}
+    ...    ${余下地址}    ${项目完整地址}    ${项目推广名}    ${估价委托人}    ${报告使用方}    ${支行}
+    ...    ${报告有效期}    ${实地勘察期}    ${价值日期}    ${作业起始时间}    ${作业终止时间}    ${现场勘察员}
+    ...    ${报告撰写人员}    ${评估总价(万元)}    ${评估单价(元/㎡)}    ${估价师1}    ${估价师2}    ${估价师合并}
+    ...    ${环线}    ${估价方法1}    ${估价方法2}    ${方法汇总}    ${其他影响因素}    ${成交总价(万元)}
+    ...    ${成交单价(元/㎡)}    ${交易日期}    ${物理结构是否变化}    ${处置扣税额(万元)}    ${扣税口净值(万元)}    ${补交出让金/综合地价款（元）}
+    ...    ${使用现状}    ${土地增值税(元)}    ${扣除土地税后(万元)}    ${优先受偿款}    ${登记用途}    ${现状用途}
+    ...    ${建筑结构}    ${建成年代 }    ${所在楼层}    ${总楼层}    ${楼层}    ${户型}
+    ...    ${房屋所有权号}    ${房屋所有人}    ${建筑面积（㎡）}    ${最高使用年限}    ${产别}    ${装修程度}
+    ...    ${产权性质}    ${剩余经济寿命}    ${土地使用权人}    ${土地用途}    ${使用权类型}    ${土地使用权面积(㎡) }
+    ...    ${图号 }    ${地号}    ${终止日期}    ${剩余土地年限(年)}    ${国有土地使用号}    ${土地坐落}
+    ...    ${借款人姓名}    ${借款人身份证}
+    Set Selenium Speed    0.5
+    Comment    项目信息
+    ${所属公司}    get value    xpath=//input[@id='Company']
+    ${所属部门}    get value    xpath=//input[@id='Department']
+    ${报告编号}    get value    xpath=//input[@id='ReportNo']
+    Input Text    xpath=//input[@id='ReportYear']    ${报告年度}
+    Input Text    xpath=//input[@id='ReportMonth']    ${报告月度}
+    Input Text    xpath=//input[@id='ProjectName']    ${项目名称}
+    Input Text    xpath=//input[@id='EvalGoal']    ${估价目的}
+    Input Text    xpath=//input[@id='GoalDescription']    ${目的描述}
+    Select From List By Value    id=ProjectProvince    ${项目所在省}
+    Select From List By Value    id=ProjectCity    ${项目所在市}
+    Select From List By Value    id=ProjectDistrict    ${项目区县}
+    Input Text    xpath=//input[@id='ResidentialAddress']    ${小区地址}
+    Input Text    xpath=//input[@id='BuildingNo']    ${楼道号}
+    Input Text    xpath=//input[@id='BuildingUnitNo']    ${单元号}
+    Input Text    xpath=//input[@id='HouseNo']    ${户号}
+    Input Text    xpath=//input[@id='OtherAddress']    ${余下地址}
+    Input Text    xpath=//input[@id='ProjectAddress']    ${项目完整地址}
+    Input Text    xpath=//input[@id='ProjectPopularizeName']    ${项目推广名}
+    Input Text    xpath=//input[@id='EvalEntrust']    ${估价委托人}
+    Input Text    xpath=//input[@id='ReportUse']    ${报告使用方}
+    Input Text    xpath=//input[@id='Subbranch']    ${支行}
+    Select From List By Value    id=ReportValidityTerm    ${报告有效期}
+    时间设置    SurveyTime    ${实地勘察期}
+    时间设置    WorthTime    ${价值日期}
+    时间设置    JobStartTime    ${作业起始时间}
+    时间设置    JobEndTime    ${作业终止时间}
+    Input Text    xpath=//input[@id='SurveyPeople']    ${现场勘察员}
+    Input Text    xpath=//input[@id='ReportWriting']    ${报告撰写人员}
+    Input Text    xpath=//input[@id='EvaluateTotal']    ${评估总价(万元)}
+    Input Text    xpath=//input[@id='EvaluatePrice']    ${评估单价(元/㎡)}
+    Input Text    xpath=//input[@id='QuantitySurveyor1']    ${估价师1}
+    Input Text    xpath=//input[@id='QuantitySurveyor2']    ${估价师2}
+    Input Text    xpath=//input[@id='QuantitySurveyorJoin']    ${估价师合并}
+    Select From List By Value    id=LoopLine    ${环线}
+    Input Text    xpath=//input[@id='EvalMethod1']    ${估价方法1}
+    Input Text    xpath=//input[@id='EvalMethod2']    ${估价方法2}
+    Input Text    xpath=//input[@id='EvalMethodJoin']    ${方法汇总}
+    Input Text    xpath=//input[@id='OtherInfluenceFactor']    ${其他影响因素}
+    Input Text    xpath=//input[@id='DealTotal']    ${成交总价(万元)}
+    Input Text    xpath=//input[@id='DealPrice']    ${成交单价(元/㎡)}
+    时间设置    BusinessTime    ${交易日期}
+    Input Text    xpath=//input[@id='PhysicalHasChanged']    ${物理结构是否变化}
+    Input Text    xpath=//input[@id='HandleTaxQuota']    ${处置扣税额(万元)}
+    Input Text    xpath=//input[@id='TaxAfterNet']    ${扣税口净值(万元)}
+    Input Text    xpath=//input[@id='PayLeasing']    ${补交出让金/综合地价款（元）}
+    Input Text    xpath=//input[@id='StatusQuo']    ${使用现状}
+    Input Text    xpath=//input[@id='LandVatQuota']    ${土地增值税(元)}
+    Input Text    xpath=//input[@id='TaxAfterVatQuota']    ${扣除土地税后(万元)}
+    Input Text    xpath=//input[@id='PriorityRepaymentInfo']    ${优先受偿款}
+    Input Text    xpath=//input[@id='RegisterUse']    ${登记用途}
+    Input Text    xpath=//input[@id='PresentUse']    ${现状用途}
+    Select From List By Value    id=BuildingStructure    ${建筑结构}
+    Input Text    xpath=//input[@id='BuiltYear']    ${建成年代 }
+    Input Text    xpath=//input[@id='Floor']    ${所在楼层}
+    Input Text    xpath=//input[@id='MaxFloor']    ${总楼层}
+    Input Text    xpath=//input[@id='FloorJoin']    ${楼层}
+    Input Text    xpath=//input[@id='HouseType']    ${户型}
+    Input Text    xpath=//input[@id='HouserOwnerNo']    ${房屋所有权号}
+    Input Text    xpath=//input[@id='HouserOwner']    ${房屋所有人}
+    Input Text    xpath=//input[@id='ArchitectureArea']    ${建筑面积（㎡）}
+    Input Text    xpath=//input[@id='MaxUseYear']    ${最高使用年限}
+    Input Text    xpath=//input[@id='Yield']    ${产别}
+    Input Text    xpath=//input[@id='Decoration']    ${装修程度}
+    Select From List By Value    id=PropertyNature    ${产权性质}
+    Input Text    xpath=//input[@id='SpareEconomicsYear']    ${剩余经济寿命}
+    Input Text    xpath=//input[@id='LandUsePeople']    ${土地使用权人}
+    Select From List By Value    id=LandUse    ${土地用途}
+    Select From List By Value    id=LandUseType    ${使用权类型}
+    Input Text    xpath=//input[@id='LandUseArea']    ${土地使用权面积(㎡) }
+    Input Text    xpath=//input[@id='DrawingNo']    ${图号 }
+    Input Text    xpath=//input[@id='LandNo']    ${地号}
+    时间设置    LandEndTime    ${终止日期}
+    Input Text    xpath=//input[@id='LandSpareYear']    ${剩余土地年限(年)}
+    Input Text    xpath=//input[@id='LandUserNo']    ${国有土地使用号}
+    Input Text    xpath=//input[@id='LandAddress']    ${土地坐落}
+    Input Text    xpath=//input[@id='BorrowerName']    ${借款人姓名}
+    Input Text    xpath=//input[@id='BorrowerId']    ${借款人身份证}
+    保存按钮
+    确定按钮
+    [Teardown]    Set Global Variable    ${借款人身份证}
+    [Return]    ${所属公司}    ${所属部门}    ${报告编号}
+
+汇总数据校验
+    [Arguments]    ${所属公司}    ${所属部门}    ${报告编号}    ${报告年度}    ${报告月度}    ${项目名称}
+    ...    ${估价目的}    ${目的描述}    ${项目所在省}    ${项目所在市}    ${项目区县}    ${小区地址}
+    ...    ${楼道号}    ${单元号}    ${户号}    ${余下地址}    ${项目完整地址}    ${项目推广名}
+    ...    ${估价委托人}    ${报告使用方}    ${支行}    ${报告有效期}    ${实地勘察期}    ${价值日期}
+    ...    ${作业起始时间}    ${作业终止时间}    ${现场勘察员}    ${报告撰写人员}    ${评估总价(万元)}    ${评估单价(元/㎡)}
+    ...    ${估价师1}    ${估价师2}    ${估价师合并}    ${环线}    ${估价方法1}    ${估价方法2}
+    ...    ${方法汇总}    ${其他影响因素}    ${成交总价(万元)}    ${成交单价(元/㎡)}    ${交易日期}    ${物理结构是否变化}
+    ...    ${处置扣税额(万元)}    ${扣税口净值(万元)}    ${补交出让金/综合地价款（元）}    ${使用现状}    ${土地增值税(元)}    ${扣除土地税后(万元)}
+    ...    ${优先受偿款}    ${登记用途}    ${现状用途}    ${建筑结构}    ${建成年代 }    ${所在楼层}
+    ...    ${总楼层}    ${楼层}    ${户型}    ${房屋所有权号}    ${房屋所有人}    ${建筑面积（㎡）}
+    ...    ${最高使用年限}    ${产别}    ${装修程度}    ${产权性质}    ${剩余经济寿命}    ${土地使用权人}
+    ...    ${土地用途}    ${使用权类型}    ${土地使用权面积(㎡) }    ${图号 }    ${地号}    ${终止日期}
+    ...    ${剩余土地年限(年)}    ${国有土地使用号}    ${土地坐落}    ${借款人姓名}    ${借款人身份证}
+    sleep    3
+    Click Element    xpath=//*[@id="tableList"]/tbody/tr[1]/td[8]/a[2]
+    基本信息    ${所属公司}    ${所属部门}    ${报告编号}    ${报告年度}    ${报告月度}    ${项目名称}
+    ...    ${估价目的}    ${目的描述}    ${项目所在省}    ${项目所在市}    ${项目区县}    ${小区地址}
+    ...    ${楼道号}    ${单元号}    ${户号}    ${余下地址}    ${项目完整地址}    ${项目推广名}
+    ...    ${估价委托人}    ${报告使用方}    ${支行}    ${报告有效期}    ${实地勘察期}    ${价值日期}
+    ...    ${作业起始时间}    ${作业终止时间}    ${现场勘察员}    ${报告撰写人员}    ${评估总价(万元)}    ${评估单价(元/㎡)}
+    ...    ${估价师1}    ${估价师2}    ${估价师合并}    ${环线}    ${估价方法1}    ${估价方法2}
+    ...    ${方法汇总}    ${其他影响因素}    ${成交总价(万元)}    ${成交单价(元/㎡)}    ${交易日期}    ${物理结构是否变化}
+    ...    ${处置扣税额(万元)}    ${扣税口净值(万元)}    ${补交出让金/综合地价款（元）}    ${使用现状}    ${土地增值税(元)}    ${扣除土地税后(万元)}
+    ...    ${优先受偿款}    ${登记用途}    ${现状用途}    ${建筑结构}    ${建成年代 }    ${所在楼层}
+    ...    ${总楼层}    ${楼层}    ${户型}    ${房屋所有权号}    ${房屋所有人}    ${建筑面积（㎡）}
+    ...    ${最高使用年限}    ${产别}    ${装修程度}    ${产权性质}    ${剩余经济寿命}    ${土地使用权人}
+    ...    ${土地用途}    ${使用权类型}    ${土地使用权面积(㎡) }    ${图号 }    ${地号}    ${终止日期}
+    ...    ${剩余土地年限(年)}    ${国有土地使用号}    ${土地坐落}    ${借款人姓名}    ${借款人身份证}

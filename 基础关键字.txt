@@ -1,0 +1,125 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Variables ***
+${Login_Url}      http://182.92.214.87:7777/    # 登录地址
+${Browser}        chrome
+
+*** Keywords ***
+登录model
+    comment    登录model
+    ${userName}    Set Variable    222222    #个人用户
+    ${password}    Set Variable    222222
+    [Teardown]    Set Global Variable    ${userName}
+    [Return]    ${userName}    ${password}
+
+询价model
+    ${platName}    Set Variable    大地新村二区
+    ${proAddress}    Set Variable
+
+随机数
+    ${random}    Evaluate    random.randint(100000,999999)    random
+    [Teardown]    Set Global Variable    ${random}
+    [Return]    ${random}
+
+获取当前时间
+    ${time}    Get Time    yyyy-mm-dd
+    ${expectTime}    Evaluate    '${time}'[0:16]
+    [Teardown]    Set Global Variable    ${expectTime}
+    [Return]    ${expectTime}
+
+打开浏览器
+    Open Browser    ${Login_Url}    ${Browser}
+    Maximize Browser Window
+
+查询按钮
+    Wait Until Element Is Enabled    xpath=//button[contains(.,'查询')]
+    Click Element    xpath=//button[contains(.,'查询')]
+
+保存按钮
+    Click Element    xpath=//button[contains(.,'保存')]
+
+确定按钮
+    sleep    3
+    Click Element    xpath=//a[contains(.,'确定')]
+
+报告发送菜单按钮
+    Click Element    xpath=//span[contains(.,'报告发送')]
+
+窗口
+    Select Frame    id=url
+
+项目审核菜单按钮
+    Click Element    xpath=//span[contains(.,'项目审核')]
+
+公共流水号
+    [Arguments]    ${流水号}
+    Input Text    xpath=//input[contains(@name,'ProjectNo')]    ${流水号}
+
+清空公共流水号
+    Clear Element Text    xpath=//input[contains(@name,'ProjectNo')]
+
+公共报告号
+    [Arguments]    ${报告号}
+    Input Text    xpath=//input[contains(@name,'ReportNo')]    ${报告号}
+
+公共项目地址
+    [Arguments]    ${项目地址}
+    Input Text    xpath=//input[contains(@name,'ProjectAddress')]    ${项目地址}
+
+清空公共报告号
+    Clear Element Text    xpath=//input[contains(@name,'ReportNo')]
+
+清空公共项目地址
+    Clear Element Text    xpath=//input[contains(@name,'ProjectAddress')]
+
+清空公共小区名称
+    Clear Element Text    xpath=//input[contains(@id,'ResidentialAreaName')]
+
+公共小区名称
+    [Arguments]    ${小区名称}
+    Input Text    xpath=//input[contains(@id,'ResidentialAreaName')]    ${小区名称}
+    [Teardown]    set global variable    ${小区名称}
+
+小区名称1
+    [Arguments]    ${platName}
+    Input Text    xpath=//input[contains(@id,'ResidentialAreaName')]    ${platName}
+    [Teardown]    set global variable    ${platName}
+
+新建报告按钮
+    Click Button    xpath=//button[contains(.,'新建报告')]
+
+公共物业类型
+    [Arguments]    ${物业类型}
+    Select From List By Value    xpath=//select[contains(@name,'PropertyType')]    ${物业类型}
+
+公共小区地址
+    [Arguments]    ${小区地址}
+    Input Text    xpath=//input[contains(@id,'ResidentialAddress')]    ${小区地址}
+
+公共项目分类
+    [Arguments]    ${项目分类}
+    Select From List By Value    xpath=//select[contains(@id,'ProjectType')]    ${项目分类}
+
+公共估价目的
+    [Arguments]    ${估价目的}
+    Select From List By Value    xpath=//select[contains(@id,'BusinessType')]    ${估价目的}
+
+公共报告类型
+    [Arguments]    ${报告类型}
+    Select From List By Value    xpath=//select[contains(@id,'ResourceType')]    ${报告类型}
+
+上传文件
+    [Arguments]    ${路径}
+    choose file    id=hideFile    ${路径}
+
+时间设置
+    [Arguments]    ${locator}    ${date}
+    execute javascript    window.document.getElementById("${locator}").value="${date}"
+
+登录隐藏
+    Click Element At Coordinates    id=alert    100    100
+
+是按钮
+    sleep    3
+    Click Element    xpath=//a[contains(.,'是')]

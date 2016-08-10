@@ -1,0 +1,7 @@
+*** Settings ***
+Resource          线上报告对外资源.txt
+
+*** Test Cases ***
+完成线上报告测试
+    Set Global Variable    ${userName}    李楠
+    完成线上报告    561611497311    201606011418

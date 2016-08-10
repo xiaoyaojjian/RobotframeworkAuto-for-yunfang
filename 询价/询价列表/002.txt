@@ -1,0 +1,60 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          ../../业务关键字.txt
+Resource          ../../基础关键字.txt
+Resource          ../询价关键字.txt
+Resource          ../../立项受理/模糊查询关键字.txt
+Resource          ../../立项受理/修改关键字.txt
+
+*** Test Cases ***
+修改验证
+    set selenium speed    0.3
+    登录
+    打开询价
+    点击询价列表
+    窗口
+    comment    验证询值价格
+    验证修改    xpath=//*[@id="table"]    3    xpath=//*[@id="table"]/tbody/tr[1]/td[11]/a[1]    MortgageResult
+    comment    验证市场价格
+    验证修改    xpath=//*[@id="table"]    4    xpath=//*[@id="table"]/tbody/tr[1]/td[11]/a[1]    InquiryResult
+    comment    验证建筑面积
+    验证修改    xpath=//*[@id="table"]    5    xpath=//*[@id="table"]/tbody/tr[1]/td[11]/a[1]    BuildingArea
+    comment    验证询价机构
+    验证修改    xpath=//*[@id="table"]    6    xpath=//*[@id="table"]/tbody/tr[1]/td[11]/a[1]    Bank
+    comment    验证客户姓名
+    验证修改    xpath=//*[@id="table"]    7    xpath=//*[@id="table"]/tbody/tr[1]/td[11]/a[1]    CustomerName
+    [Teardown]    Close Browser
+
+查询验证
+    set selenium speed    0.3seconds
+    登录
+    打开询价
+    点击询价列表
+    窗口
+    sleep    2
+    列表记录数
+    ${num}    Get Alert Message
+    Should Be Equal    ${num}    10
+    comment    验证每页显示多少条记录是否正确
+    Click Element    css=.btn-group.dropup    #如果有空格需要连缀选择
+    Comment    Execute Javascript    jquery=$('.dropdown-menu li:eq(0)').removeClass()    #清空默认的class属性
+    Comment    sleep    1
+    Comment    Execute Javascript    jquery=$('.dropdown-menu li:eq(2)').attr('class','active')    #设置为50
+    Click Element    xpath=/html/body/div/div[1]/div[2]/div[4]/div[1]/span[2]/span/ul/li[4]
+    sleep    3
+    列表记录数
+    ${numCount}    Get Alert Message
+    Should Be True    '${numCount}'>'10'    记录数必须大于10
+    comment    验证小区名称
+    查询一条记录    xpath=//*[@id="table"]    1    ResidentialAreaName
+    条件查询    xpath=//*[@id="table"]    1    ResidentialAreaName
+    comment    验证项目地址
+    查询一条记录    xpath=//*[@id="table"]    2    Address
+    条件查询    xpath=//*[@id="table"]    2    Address
+    comment    验证询价机构
+    查询一条记录    xpath=//*[@id="table"]    6    Bank
+    条件查询    xpath=//*[@id="table"]    6    Bank
+    comment    验证询价人
+    查询一条记录    xpath=//*[@id="table"]    7    CustomerName
+    条件查询    xpath=//*[@id="table"]    7    CustomerName
+    [Teardown]    Close Browser

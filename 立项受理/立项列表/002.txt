@@ -1,0 +1,81 @@
+*** Settings ***
+Resource          ../../业务关键字.txt
+Resource          ../../基础关键字.txt
+Resource          ../立项关键字.txt
+Resource          ../立项业务关键字.txt
+Resource          ../模糊查询关键字.txt
+Resource          ../修改关键字.txt
+Resource          ../日期查询关键字.txt
+
+*** Test Cases ***
+查询
+    Set Selenium Speed    0.3
+    登录
+    点击立项受理
+    点击立项列表
+    窗口
+    comment    流水号查询
+    条件查询    xpath=//*[@id="table"]    1    ProjectNo
+    comment    报告编号查询
+    条件查询    xpath=//*[@id="table"]    2    ReportNo
+    comment    项目地址查询
+    条件查询    xpath=//*[@id="table"]    3    ProjectAddress
+    comment    小区名称查询
+    条件查询    xpath=//*[@id="table"]    4    ResidentialAreaName
+    comment    估价目的查询
+    条件查询    xpath=//*[@id="table"]    6    BusinessType
+    comment    项目来源查询
+    条件查询    xpath=//*[@id="table"]    8    ProjectSource
+    comment    项目物业类型
+    条件查询    xpath=//*[@id="table"]    5    PropertyType
+    comment    项目估价委托方
+    条件查询    xpath=//*[@id="table"]    9    Principal
+    comment    按照日期查询
+    日期查询    xpath=//*[@id,'table']    10
+    [Teardown]    Close Browser
+
+编辑
+    Set Selenium Speed    0.3
+    登录
+    点击立项受理
+    点击立项列表
+    窗口
+    comment    验证编辑的内容
+    comment    验证报告编号
+    验证修改    xpath=//*[@id="table"]    2    xpath=//*[@id="table"]/tbody/tr[1]/td[12]/a[2]    id=ReportNo
+    comment    验证物业类型
+    验证修改    xpath=//*[@id="table"]    5    xpath=//*[@id="table"]/tbody/tr[1]/td[12]/a[2]    id=PropertyType
+    comment    验证报告类型
+    验证修改    xpath=//*[@id="table"]    7    xpath=//*[@id="table"]/tbody/tr[1]/td[12]/a[2]    id=ReportType
+    comment    验证估价目的
+    验证修改    xpath=//*[@id="table"]    6    xpath=//*[@id="table"]/tbody/tr[1]/td[12]/a[2]    id=BusinessType
+    comment    验证项目来源
+    验证修改    xpath=//*[@id="table"]    8    xpath=//*[@id="table"]/tbody/tr[1]/td[12]/a[2]    id=ProjectSource
+    comment    验证客户姓名
+    验证修改    xpath=//*[@id="table"]    9    xpath=//*[@id="table"]/tbody/tr[1]/td[12]/a[2]    id=CustomerName
+    [Teardown]    Close Browser
+
+线上报告
+    Set Selenium Speed    0.2
+    登录
+    点击立项受理
+    点击立项列表
+    窗口
+    Wait Until Page Contains Element    xpath=//*[@id="table"]/tbody/tr[1]/td[12]/a[3]
+    Click Element    xpath=//*[@id="table"]/tbody/tr[1]/td[12]/a[3]
+    [Teardown]    Close Browser
+
+翻页查询
+    Set Selenium Speed    0.5
+    登录
+    点击立项受理
+    点击立项列表
+    窗口
+    Click Element    css=.btn-group.dropup
+    Click Element    xpath=/html/body/div/div[1]/div[2]/div[4]/div[1]/span[2]/span/ul/li[4]    #100条查询
+    sleep     2
+    列表记录数
+    ${currentNum}    Get Alert Message
+    ${countNum}    Get Text    xpath=/html/body/div/div[1]/div[2]/div[4]/div[1]/span[1]
+    Should Contain    ${countNum}    显示第 1 到第 ${currentNum} 条记录
+    [Teardown]    Close Browser

@@ -1,0 +1,119 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          ../基础关键字.txt
+Resource          ../业务关键字.txt
+Resource          立项关键字.txt
+Resource          立项业务关键字.txt
+Resource          模糊查询关键字.txt
+Resource          ../询价/询价关键字.txt
+
+*** Keywords ***
+验证修改
+    [Arguments]    ${tablePath}    ${col}    ${editPath}    ${id}
+    Set Selenium Speed    0.5
+    ${preValue}    getCell    ${tablePath}    ${col}
+    Click Element    ${editPath}
+    ${status}    Run Keyword And Return Status    Page Should Contain Element    id=ico-collapse2
+    Run Keyword If    '${status}'=='True'    Click Element    id=ico-collapse2
+    Execute Javascript    jquery=type=$('#${id}').get(0).tagName
+    ${type}    Execute Javascript    return type
+    根据类型选择    ${type}    ${id}    ${preValue}
+    确定
+    Comment    Wait Until Page Contains    提交审核
+    ${saveValue}    getCell    ${tablePath}    ${col}
+    Run Keyword If    '${type}'=='INPUT'    文本判断    ${saveValue}
+    ...    ELSE IF    '${type}'=='SELECT'    下拉判断    ${saveValue}
+    [Teardown]
+
+文本修改
+    [Arguments]    ${id}    ${preValue}
+    Set Selenium Speed    0.5
+    清除文本    id=${id}
+    ${outText}    获取输入值    ${preValue}
+    ${tp}    Evaluate    type(${outText})
+    ${lastInputValue}    Run Keyword If    "${tp}"=="<type 'str'>"    Evaluate    ${outText}.decode('utf-8','ignore')
+    ...    ELSE    Evaluate    str(${outText})    #转换为字符串，不然无法输入
+    log    ${lastInputValue}
+    Input Text    id=${id}    ${lastInputValue}
+    Comment    ${cnStatus}    Run Keyword And Return Status    Page Should Contain Element    id=CustomerName
+    Comment    ${CustomerName}    Run Keyword If    '${cnStatus}'=='True'    Get Text    id=CustomerName
+    Comment    ...
+    ...    ELSE
+    Comment    ${status1}    Run Keyword And Return Status    Should Not Be Empty    ${CustomerName}
+    Comment    Run Keyword If    '${id}'=='Bank' and '${status1}'=='False'    Input Text    id=CustomerName    敖翔测试    #客户姓名和所属机构关联
+    Comment    ${bank}    Get Text    id=Bank
+    Comment    ${status2}    Run Keyword And Return Status    Should Not Be Empty    ${bank}
+    Comment    Run Keyword If    '${id}'=='CustomerName' and '${status2}'=='False'    Input Text    id=Bank    前房村银行
+    [Teardown]    Set Global Variable    ${lastInputValue}
+
+下拉修改
+    [Arguments]    ${id}
+    Set Selenium Speed    0.3
+    Select From List By Index    id=${id}    1
+    ${selectValue}    Get Selected List Value    id=${id}
+    [Teardown]    Set Global Variable    ${selectValue}
+
+根据类型选择
+    [Arguments]    ${type}    ${id}    ${preValue}
+    Set Selenium Speed    0.3
+    Run Keyword if    '${type}'=='INPUT'    文本修改    ${id}    ${preValue}
+    ...    ELSE IF    '${type}'=='SELECT'    下拉修改    ${id}
+    [Teardown]
+
+文本判断
+    [Arguments]    ${saveValue}
+    Run Keyword And Continue On Failure    Should Contain    ${saveValue}    ${lastInputValue}
+
+下拉判断
+    [Arguments]    ${saveValue}
+    Run Keyword And Continue On Failure    Should Be True    '${saveValue}'=='${selectValue}'    保存失败
+
+设置文本值
+    [Arguments]    ${preValue}
+    ${outText}    Run Keyword If    '${preValue}'=='-'    Set Variable    10010
+    ...    ELSE    是否可以type    ${preValue}
+    Comment    ${dateType}    Evaluate    type(${preValue})
+    Comment    ${outText}    Run Keyword And Return If    "${dateType}"=="<type 'int'>"    Evaluate    ${preValue}-1
+    Comment    ...
+    ...    ELSE IF    "${dateType}"=="<type 'float'>"    Evaluate    ${preValue}-1
+    Comment    ...
+    ...    ELSE IF    "${dateType}"=="<type 'NoneType'>"    Input Text    id=${id}    10086
+    [Teardown]    Set Global Variable    ${outText}
+    [Return]    ${outText}
+
+获取输入值
+    [Arguments]    ${preValue}
+    Evaluate    '${preValue}'.decode('utf-8','ignore')
+    @{list}    Evaluate    list('${preValue}'.decode('utf-8','ignore'))
+    ${tempStr}    Evaluate    ''.join(@{list})
+    ${b}    Evaluate    len(@{list})
+    ${tempLen}    Run Keyword If    ${b}==0    Evaluate    0
+    ...    ELSE    Evaluate    len('@{list}[0]')
+    ${o}    Run Keyword If    ${tempLen}==0    Evaluate    100
+    ...    ELSE IF    ${tempLen}==3    Set Variable    '我是${tempStr}'
+    ...    ELSE IF    ${tempLen}==1    设置文本值    ${preValue}
+    [Teardown]    Set Global Variable    ${o}
+    [Return]    ${o}
+
+确定
+    Set Selenium Speed    0.5
+    保存按钮
+    ${statusConfirm}    Run Keyword And Return Status    Page Should Contain Element    xpath=//a[contains(.,'确定')]
+    ${statusSave}    Run Keyword And Return Status    Page Should Contain Element    id=print
+    Run Keyword If    '${statusSave}'=='True' and '${statusConfirm}'=='True'    确定按钮
+    ...    ELSE IF    '${statusSave}'=='False' and '${statusConfirm}'=='False'    log    不用操作
+    ...    ELSE IF    '${statusSave}'=='True' and '${statusConfirm}'=='False'    Run Keywords    保存按钮    确定按钮
+
+是否可以type
+    [Arguments]    ${preValue}
+    ${dateType}    Evaluate    type(${preValue})
+    ${char}    Evaluate    '${preValue}'.isalpha()    #全是字母
+    ${num}    Evaluate    '${preValue}'.isdigit()    #全是数字
+    ${charOrNum}    Evaluate    '${preValue}'.isalnum()    #有字母或数字
+    ${valueOut}    Run Keyword If    '${char}'=='True'    Set Variable    'aox${preValue}'
+    ...    ELSE IF    '${num}'=='True'    Evaluate    ${preValue}+1
+    ...    ELSE IF    '${charOrNum}'=='True'    Set Variable    '8${preValue}'
+    ...    ELSE IF    "${dateType}"=="<type 'float'>"    Evaluate    ${preValue}+1
+    ...    ELSE    Set Variable    10086
+    [Teardown]    Set Global Variable    ${valueOut}
+    [Return]    ${valueOut}

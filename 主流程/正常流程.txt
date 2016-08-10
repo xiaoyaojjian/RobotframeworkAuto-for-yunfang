@@ -1,0 +1,78 @@
+*** Settings ***
+Test Setup        登录
+Test Teardown     Close Browser
+Resource          ../业务关键字.txt
+Resource          ../询价/询价主流程.txt
+Resource          ../立项受理/立项主流程.txt
+Resource          ../线上报告/线上报告对外资源.txt
+Resource          ../项目审核/项目审核对外资源.txt
+Resource          ../报告发送/报告发送对外资源.txt
+
+*** Test Cases ***
+流程1
+    Comment    询价-
+    询价主流程
+    Unselect Frame
+    Comment    在添加界面转立项（取到流水号）
+    ${project_no}    ${report_no}    立项主流程
+    Comment    立项列表查询（流水号）
+    Comment    完成线上报告
+    完成线上报告    ${project_no}    ${report_no}
+    提交审核    ${project_no}
+    Comment    根据流水号查询项目审核列表
+    Comment    完成汇总数据
+    Comment    查看详细
+    Comment    查看报告
+    Comment    上传报告
+    Comment    下载报告
+    Comment    审核通过
+    进行项目审核    ${project_no}
+    Comment    根据流水号查询报告发送列表
+    Comment    发送报告
+    进行报告发送    ${project_no}
+    Comment    查看详细
+    Comment    综合查询-根据流水号查询
+    Comment    查看-结合汇总数据和立项数据做检查
+    Comment    下载报告
+
+流程2
+    [Documentation]    立项-线上报告-汇总数据编写-项目审核-发送报告
+    Comment    在添加界面转立项（取到流水号）
+    ${project_no}    ${report_no}    立项主流程
+    Comment    完成线上报告
+    完成线上报告    ${project_no}    ${report_no}
+    提交审核    ${project_no}
+    Comment    完成汇总数据并查询详细内容
+    完成汇总数据    ${project_no}
+    Comment    上传报告
+    上传报告    ${project_no}
+    Comment    审核通过
+    进行项目审核    ${project_no}
+    Comment    发送报告并查看详细
+    进行报告发送    ${project_no}
+
+流程3
+    Comment    询价-
+    添加询价数据
+    转立项按钮
+    Comment    在添加界面转立项（取到流水号）
+    ${project_no}    ${report_no}    立项主流程
+    Comment    立项列表查询（流水号）
+    Comment    完成线上报告
+    完成线上报告    ${project_no}    ${report_no}
+    提交审核    ${project_no}
+    Comment    根据流水号查询项目审核列表
+    Comment    完成汇总数据
+    Comment    查看详细
+    Comment    查看报告
+    Comment    上传报告
+    Comment    下载报告
+    Comment    审核通过
+    进行项目审核    ${project_no}
+    Comment    根据流水号查询报告发送列表
+    Comment    发送报告
+    进行报告发送    ${project_no}
+    Comment    查看详细
+    Comment    综合查询-根据流水号查询
+    Comment    查看-结合汇总数据和立项数据做检查
+    Comment    下载报告

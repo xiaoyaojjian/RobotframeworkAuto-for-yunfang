@@ -1,0 +1,42 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          ../业务关键字.txt
+Resource          ../基础关键字.txt
+Resource          询价关键字.txt
+Resource          ../立项受理/模糊查询关键字.txt
+
+*** Keywords ***
+询价主流程
+    set selenium speed    0.5seconds
+    添加询价数据
+    Comment    Run Keyword If    ${printStatus}==True    Click Button    id=print
+    保存按钮
+    sleep    1
+    确定按钮
+    comment    验证询价是否添加成功，通过创建时间
+    Comment    ${listTime}    Get Table Cell    xpath=//*[@id="table"]    2    8
+    Comment    ${subTime}    获取当前时间
+    Comment    Should Contain    ${listTime}    ${subTime}    PASS
+    comment    验证询价添加人是否正确
+    ${iqueryPerson}    Get Table Cell    xpath=//*[@id="table"]    2    9
+    ${userName}    ${password}    登录model
+    Should Be Equal    ${iqueryPerson}    ${userName}    询价添加人错误
+    comment    验证立项的默认状态为‘否’
+    ${defaultStatus}    Get Table Cell    xpath=//*[@id="table"]    2    10
+    Should Be Equal    ${defaultStatus}    否
+    Unselect Frame
+
+添加询价数据
+    打开询价
+    Comment    点击添加询价
+    Click Element    xpath=//*[@id="sidebar"]/ul/li[1]/ul/li[1]/a
+    Maximize Browser Window
+    窗口
+    询价content
+    Comment    ${price}    Get Text    id=AreaPrice
+    Comment    Run Keyword And Continue On Failure    Should Be True    '${price}'!='0'    询价查询不到基础库数据
+    Input Text    id=FeedbackPrice    40000
+    Input Text    id=MortgagePrice    39000
+    Input Text    id=InquiryPrice    41000
+    comment    验证打印询价单
+    ${printStatus}    Run Keyword And Return Status    Page Should Contain Button    id=print
